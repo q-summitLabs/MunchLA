@@ -9,6 +9,7 @@ interface RequestParams {
   user_id: string;
 }
 
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const session = await getServerSession(authOptions);
 
