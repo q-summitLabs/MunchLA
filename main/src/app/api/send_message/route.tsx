@@ -143,7 +143,7 @@ export async function POST(req: Request): Promise<Response> {
     // CORS headers
     const res = NextResponse.next();
     res.headers.set("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.headers.set("Access-Control-Allow-Methods", "GET");
+    res.headers.set("Access-Control-Allow-Methods", "POST");
     res.headers.set("Access-Control-Allow-Headers", "Content-Type");
 
     // Handle preflight requests
