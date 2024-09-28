@@ -22,9 +22,16 @@ async function dbConnect() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      useNewUrlParser: true,
+      // Connection pooling options
+      maxPoolSize: 10, // Adjust the pool size as needed
+      minPoolSize: 1,
+      autoIndex: true,
+      serverSelectionTimeoutMS: 5000, // Adjust the server selection timeout as needed
     };
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
+      console.log("Connected to MongoDB using connection pooling");
       return mongoose;
     });
   }
