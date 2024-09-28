@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,9 +32,13 @@ import {
   ChevronRightIcon,
   SendIcon,
   Loader2Icon,
-  TrashIcon
+  TrashIcon,
 } from "lucide-react";
-import { fetchUserSessions, fetchNextAvailableChatSession, fetchConversation} from "@/api_callers/getters";
+import {
+  fetchUserSessions,
+  fetchNextAvailableChatSession,
+  fetchConversation,
+} from "@/api_callers/getters";
 import { useSession } from "next-auth/react";
 import { sendMessage } from "@/api_callers/setters";
 import { RestaurantCard } from "@/components/restaurant_cards/restaurant_cards";
@@ -42,12 +46,12 @@ import { RestaurantCard } from "@/components/restaurant_cards/restaurant_cards";
 type AIMessageContent = {
   general_response: string;
   restaurants: Restaurant[];
-}
+};
 
 type MessageData = {
   message_type: string;
   content: string | AIMessageContent;
-}
+};
 
 type Restaurant = {
   name: string;
@@ -73,30 +77,34 @@ type Session = {
   id: string;
   conversation_preview: string;
   last_updated: string;
-}
+};
 
 type SessionData = {
   session_id: string;
   conversation_preview: string;
   last_updated: string;
-}
-
+};
 
 export default function MunchLAChatbot() {
   const [prompt, setPrompt] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isFirstInput, setIsFirstInput] = useState(true);
-  const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
+  const [currentConversation, setCurrentConversation] =
+    useState<Conversation | null>(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [userSessions, setUserSessions] = useState<Session[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const { data: loginInfo } = useSession();
-  const [currentChatSession, setCurrentChatSession] = useState<string | null>(null);
+  const [currentChatSession, setCurrentChatSession] = useState<string | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  console.log(userId);
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentConversation]);
 
   useEffect(() => {
@@ -105,10 +113,10 @@ export default function MunchLAChatbot() {
         const session = await fetchNextAvailableChatSession(userId);
         setCurrentChatSession(session);
       } catch (error) {
-        console.error('Failed to fetch chat session', error);
+        console.error("Failed to fetch chat session", error);
       }
     };
-  
+
     if (loginInfo?.user?.email) {
       setUserId(loginInfo.user.email);
       fetchChatSession(loginInfo.user.email);
@@ -121,28 +129,28 @@ export default function MunchLAChatbot() {
         if (!userId) {
           return;
         }
-  
+
         const response = await fetchUserSessions(userId);
-  
+
         if (!response) {
           throw new Error(`Error: ${response.status}`);
         }
-  
-        const data: SessionData[] = response['sessions'];
+
+        const data: SessionData[] = response["sessions"];
         console.log(`data: ${JSON.stringify(data)}`);
         let sessions: Session[] = [];
-        
-        sessions = data.map(item => ({
-            id: item.session_id,
-            conversation_preview: item.conversation_preview,
-            last_updated: item.last_updated,
+
+        sessions = data.map((item) => ({
+          id: item.session_id,
+          conversation_preview: item.conversation_preview,
+          last_updated: item.last_updated,
         }));
         setUserSessions(sessions);
       } catch (error) {
         console.error("Failed to fetch sessions", error);
       }
     };
-  
+
     fetchSessions();
   }, [userId]);
 
@@ -155,32 +163,35 @@ export default function MunchLAChatbot() {
   }, [isDarkMode]);
 
   useEffect(() => {
-    if (currentConversation){
+    if (currentConversation) {
       setIsFirstInput(false);
     }
   }, [currentConversation]);
-  
+
   const handleSessionClick = async (sessionId: string) => {
     if (!sessionId || !userId) return;
     setCurrentChatSession(sessionId);
     try {
-      const conversation = await fetchConversation(userId, sessionId) as MessageData[];
+      const conversation = (await fetchConversation(
+        userId,
+        sessionId
+      )) as MessageData[];
       console.log(`convo: ${JSON.stringify(conversation)}`);
       const messages: Message[] = [];
 
-      conversation.forEach(message => {
-        let text = '';
+      conversation.forEach((message) => {
+        let text = "";
         let isBot = false;
         let restaurants: Restaurant[] | undefined;
-      
-        if (message.message_type === 'ai_message') {
-          if (typeof(message.content) === 'object') {
+
+        if (message.message_type === "ai_message") {
+          if (typeof message.content === "object") {
             text = message.content.general_response;
             isBot = true;
             restaurants = message.content.restaurants;
           }
         } else {
-          if (typeof(message.content) === 'string') {
+          if (typeof message.content === "string") {
             text = message.content;
             isBot = false;
             restaurants = [];
@@ -192,13 +203,13 @@ export default function MunchLAChatbot() {
           restaurants,
         });
       });
-      
+
       const conversationData: Conversation = {
         id: sessionId,
         title: `Chat Session ${sessionId}`,
         messages,
       };
-  
+
       setCurrentConversation(conversationData);
     } catch (error) {
       console.error("Error fetching conversation:", error);
@@ -208,8 +219,10 @@ export default function MunchLAChatbot() {
   const handleRemoveSession = async (sessionId: string) => {
     // Here you would typically call an API to remove the session
     // For now, we'll just remove it from the local state
-    setUserSessions(prevSessions => prevSessions.filter(session => session.id !== sessionId));
-    
+    setUserSessions((prevSessions) =>
+      prevSessions.filter((session) => session.id !== sessionId)
+    );
+
     // If the removed session was the current one, clear the current conversation
     if (currentChatSession === sessionId) {
       setCurrentConversation(null);
@@ -223,23 +236,26 @@ export default function MunchLAChatbot() {
 
     if (!prompt.trim() || !userId || !currentChatSession) return;
 
-    setCurrentConversation(prevConversation => ({
+    setCurrentConversation((prevConversation) => ({
       id: prevConversation?.id || currentChatSession,
-      title: prevConversation?.title || 'New Conversation',
-      messages: [...(prevConversation?.messages || []), { text: prompt, isBot: false }],
+      title: prevConversation?.title || "New Conversation",
+      messages: [
+        ...(prevConversation?.messages || []),
+        { text: prompt, isBot: false },
+      ],
     }));
 
     setIsLoading(true);
-    setPrompt('');
+    setPrompt("");
     setIsFirstInput(false);
 
     try {
       const response = await sendMessage(userId, currentChatSession, prompt);
-      const { general_response, restaurants } = response['aiResponse'];
+      const { general_response, restaurants } = response["aiResponse"];
 
-      setCurrentConversation(prevConversation => ({
+      setCurrentConversation((prevConversation) => ({
         id: prevConversation?.id || currentChatSession,
-        title: prevConversation?.title || 'New Conversation',
+        title: prevConversation?.title || "New Conversation",
         messages: [
           ...(prevConversation?.messages || []),
           { text: general_response, isBot: true, restaurants: restaurants },
@@ -259,19 +275,19 @@ export default function MunchLAChatbot() {
   const startNewConversation = async () => {
     setCurrentConversation(null);
     setIsFirstInput(true);
-  
+
     if (!userId) {
       console.error("Invalid user ID");
       return;
     }
-  
+
     try {
       const response = await fetchNextAvailableChatSession(userId);
       if (!response) {
         throw new Error(`Error fetching next session: ${response.status}`);
       }
       // const data = await response.json();
-      console.log('next sesh', response);
+      console.log("next sesh", response);
       setCurrentChatSession(response);
     } catch (error) {
       console.error("Failed to fetch next chat session", error);
@@ -348,25 +364,36 @@ export default function MunchLAChatbot() {
             <ScrollArea className="flex-grow p-4">
               <div className="space-y-2">
                 {userSessions.map((session) => (
-                  <div key={session.id} className="group relative flex items-center justify-between">
+                  <div
+                    key={session.id}
+                    className="group relative flex items-center justify-between"
+                  >
                     <Button
                       variant="ghost"
                       className="w-full text-sm pr-8 flex items-center justify-between"
                       onClick={() => handleSessionClick(session.id)}
                     >
                       {/* Limit the width of the truncated text */}
-                      <span className="truncate max-w-[180px]">{session.conversation_preview}</span>
-                      
+                      <span className="truncate max-w-[180px]">
+                        {session.conversation_preview}
+                      </span>
+
                       {/* The delete button section remains to the right */}
                       <div className="flex items-center space-x-2">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
                               <MoreHorizontalIcon className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleRemoveSession(session.id)}>
+                            <DropdownMenuItem
+                              onClick={() => handleRemoveSession(session.id)}
+                            >
                               <TrashIcon className="mr-2 h-4 w-4" />
                               <span>Delete</span>
                             </DropdownMenuItem>
@@ -376,8 +403,7 @@ export default function MunchLAChatbot() {
                     </Button>
                   </div>
                 ))}
-            </div>
-
+              </div>
             </ScrollArea>
             <div className="p-4 mt-auto">
               <DropdownMenu>
@@ -411,8 +437,11 @@ export default function MunchLAChatbot() {
             </Button>
           </div>
           <Avatar>
-            <AvatarImage src={loginInfo?.user?.image ?? ''} alt={loginInfo?.user?.name ?? 'User'} />
-            <AvatarFallback>{loginInfo?.user?.name?.[0] ?? 'U'}</AvatarFallback>
+            <AvatarImage
+              src={loginInfo?.user?.image ?? ""}
+              alt={loginInfo?.user?.name ?? "User"}
+            />
+            <AvatarFallback>{loginInfo?.user?.name?.[0] ?? "U"}</AvatarFallback>
           </Avatar>
         </header>
 
@@ -422,7 +451,8 @@ export default function MunchLAChatbot() {
               <>
                 <h1 className="text-4xl font-bold text-left">
                   <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-yellow-400 dark:from-purple-400 dark:to-yellow-300">
-                    Hello, {loginInfo?.user?.name ? loginInfo.user.name : "there"}!
+                    Hello,{" "}
+                    {loginInfo?.user?.name ? loginInfo.user.name : "there"}!
                   </span>
                 </h1>
                 <p className="text-xl text-gray-600 dark:text-gray-400 text-left">
@@ -458,29 +488,40 @@ export default function MunchLAChatbot() {
                       exit={{ opacity: 0, y: -20 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
                     >
-                      <div className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}>
-                        <div className={`inline-block p-3 rounded-lg max-w-[80%] ${
-                          message.isBot
-                            ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
-                            : "bg-purple-500 text-white"
-                        }`}>
+                      <div
+                        className={`flex ${
+                          message.isBot ? "justify-start" : "justify-end"
+                        }`}
+                      >
+                        <div
+                          className={`inline-block p-3 rounded-lg max-w-[80%] ${
+                            message.isBot
+                              ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
+                              : "bg-purple-500 text-white"
+                          }`}
+                        >
                           <p>{message.text}</p>
                         </div>
                       </div>
                       {message.restaurants && (
                         <div className="mt-4 space-y-4">
                           <AnimatePresence>
-                            {message.restaurants.map((restaurant, restaurantIndex) => (
-                              <motion.div
-                                key={restaurantIndex}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.3, delay: restaurantIndex * 0.1 }}
-                              >
-                                <RestaurantCard restaurant={restaurant} />
-                              </motion.div>
-                            ))}
+                            {message.restaurants.map(
+                              (restaurant, restaurantIndex) => (
+                                <motion.div
+                                  key={restaurantIndex}
+                                  initial={{ opacity: 0, y: 20 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -20 }}
+                                  transition={{
+                                    duration: 0.3,
+                                    delay: restaurantIndex * 0.1,
+                                  }}
+                                >
+                                  <RestaurantCard restaurant={restaurant} />
+                                </motion.div>
+                              )
+                            )}
                           </AnimatePresence>
                         </div>
                       )}
@@ -494,7 +535,8 @@ export default function MunchLAChatbot() {
                     </div>
                   </div>
                 )}
-                {currentConversation && currentConversation.messages &&
+                {currentConversation &&
+                  currentConversation.messages &&
                   currentConversation.messages.length > 0 && (
                     <div className="flex justify-start space-x-2">
                       <Button variant="ghost" size="icon">

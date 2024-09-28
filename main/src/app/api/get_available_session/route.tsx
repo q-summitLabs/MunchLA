@@ -30,9 +30,9 @@ interface Sessions {
 
 interface UserDocument {
   _id: string;
-  sessions: Sessions; 
+  sessions: Sessions;
 }
-  
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     // Extract query parameters from the URL
@@ -41,24 +41,25 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     // Validate that user_id is provided
     if (!user_id) {
-      return NextResponse.json(
-        { error: "Missing user_id" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing user_id" }, { status: 400 });
     }
 
     // Connect to MongoDB using Mongoose
     await dbConnect();
 
     // Retrieve the user document using the Conversation model
-    const userDocument = await Conversation.findOne({ _id: user_id }).lean() as UserDocument;
+    const userDocument = (await Conversation.findOne({
+      _id: user_id,
+    }).lean()) as UserDocument;
+
 
     // If user doesn't exist or doesn't have any sessions, return session_id as 1
-    if (!userDocument || !userDocument.sessions || Object.keys(userDocument.sessions).length === 0) {
-      return NextResponse.json(
-        { next_session_id: 1 },
-        { status: 200 }
-      );
+    if (
+      !userDocument ||
+      !userDocument.sessions ||
+      Object.keys(userDocument.sessions).length === 0
+    ) {
+      return NextResponse.json({ next_session_id: 1 }, { status: 200 });
     }
 
     // Convert the Mongoose document to a plain JS object and retrieve the keys of the sessions object
