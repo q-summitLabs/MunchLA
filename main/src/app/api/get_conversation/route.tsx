@@ -52,12 +52,12 @@ export async function GET(req: NextRequest): Promise<Response> {
     await dbConnect();
 
     // Retrieve the conversation history using Mongoose and use `.lean()` to return a plain JS object
-    const userDocument = await Conversation.findOne(
+    const userDocument = (await Conversation.findOne(
       { _id: user_id },
       { [`sessions.${session_id}.messages`]: 1 }
-    ).lean() as UserDocument;
+    ).lean()) as UserDocument;
 
-    console.log('here', userDocument);
+    console.log("here", userDocument);
 
     if (
       !userDocument ||
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest): Promise<Response> {
             content: message.content,
           };
         } else if (message.message_type === "ai_message") {
-          if (message.content && typeof(message.content) === 'object') {
+          if (message.content && typeof message.content === "object") {
             return {
               message_type: "ai_message",
               content: {
