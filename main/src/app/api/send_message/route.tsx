@@ -196,15 +196,17 @@ export async function POST(req: NextRequest): Promise<Response> {
     const messageHistory = new ChatMessageHistory();
 
     console.time("Load messages into history");
-    dbMessages.forEach((dbMessage: Message) => {
+    for (const dbMessage of dbMessages) {
       if (dbMessage.message_type === "human_message_no_prompt") {
-        messageHistory.addMessage(new HumanMessage(dbMessage.content as string));
+        await messageHistory.addMessage(new HumanMessage(dbMessage.content as string));
       } else if (dbMessage.message_type === "ai_message" || dbMessage.message_type === "restaurant_data") {
-        messageHistory.addMessage(new AIMessage(JSON.stringify(dbMessage.content)));
+        await messageHistory.addMessage(new AIMessage(JSON.stringify(dbMessage.content)));
       }
-    });
-    
+      // console.log(`db message content: ${dbMessage.content}`);
+    }
     console.timeEnd("Load messages into history");
+
+    console.log(`message history: ${JSON.stringify(messageHistory)}`);
 
 
     console.time("Generate AI response");
