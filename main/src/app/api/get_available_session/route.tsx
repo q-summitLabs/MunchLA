@@ -52,6 +52,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       _id: user_id,
     }).lean()) as UserDocument;
 
+
     // If user doesn't exist or doesn't have any sessions, return session_id as 1
     if (
       !userDocument ||
