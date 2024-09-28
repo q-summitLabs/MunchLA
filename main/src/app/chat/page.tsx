@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -39,6 +39,16 @@ import { useSession } from "next-auth/react";
 import { sendMessage } from "@/api_callers/setters";
 import { RestaurantCard } from "@/components/restaurant_cards/restaurant_cards";
 
+type AIMessageContent = {
+  general_response: string;
+  restaurants: Restaurant[];
+}
+
+type MessageData = {
+  message_type: string;
+  content: string | AIMessageContent;
+}
+
 type Restaurant = {
   name: string;
   address: string;
@@ -64,6 +74,13 @@ type Session = {
   conversation_preview: string;
   last_updated: string;
 }
+
+type SessionData = {
+  session_id: string;
+  conversation_preview: string;
+  last_updated: string;
+}
+
 
 export default function MunchLAChatbot() {
   const [prompt, setPrompt] = useState("");
@@ -111,7 +128,8 @@ export default function MunchLAChatbot() {
           throw new Error(`Error: ${response.status}`);
         }
   
-        const data: any[] = response['sessions'];
+        const data: SessionData[] = response['sessions'];
+        console.log(`data: ${JSON.stringify(data)}`);
         let sessions: Session[] = [];
         
         sessions = data.map(item => ({
@@ -146,14 +164,34 @@ export default function MunchLAChatbot() {
     if (!sessionId || !userId) return;
     setCurrentChatSession(sessionId);
     try {
-      const conversation = await fetchConversation(userId, sessionId);
-      const messages: Message[] = conversation.map(message => ({
-        text: message.message_type === 'ai_message'
-          ? message.content.general_response || ''
-          : message.content || '',
-        isBot: message.message_type === 'ai_message',
-        restaurants: message.message_type === 'ai_message' ? message.content.restaurants : undefined,
-      }));
+      const conversation = await fetchConversation(userId, sessionId) as MessageData[];
+      console.log(`convo: ${JSON.stringify(conversation)}`);
+      const messages: Message[] = [];
+
+      conversation.forEach(message => {
+        let text = '';
+        let isBot = false;
+        let restaurants: Restaurant[] | undefined;
+      
+        if (message.message_type === 'ai_message') {
+          if (typeof(message.content) === 'object') {
+            text = message.content.general_response;
+            isBot = true;
+            restaurants = message.content.restaurants;
+          }
+        } else {
+          if (typeof(message.content) === 'string') {
+            text = message.content;
+            isBot = false;
+            restaurants = [];
+          }
+        }
+        messages.push({
+          text,
+          isBot,
+          restaurants,
+        });
+      });
       
       const conversationData: Conversation = {
         id: sessionId,
@@ -388,7 +426,7 @@ export default function MunchLAChatbot() {
                   </span>
                 </h1>
                 <p className="text-xl text-gray-600 dark:text-gray-400 text-left">
-                  How can I help you discover LA's culinary delights today?
+                  How can I help you discover LA&apos;s culinary delights today?
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

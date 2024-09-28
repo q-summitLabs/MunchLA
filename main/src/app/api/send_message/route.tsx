@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { ChatOpenAI } from "@langchain/openai";
 import {
   ChatPromptTemplate,
@@ -30,25 +30,31 @@ interface RequestBody {
   message: string;
 }
 
+interface Restaurant {
+  name: string;
+  address: string;
+  rating: number;
+  price: string;
+  summary: string;
+}
+
+interface AIMessageContent {
+  general_response: string;
+  restaurants: Restaurant[];
+}
+
 interface Message {
   message_type: string;
-  content: any;
-  timestamp: string;
+  content: string | AIMessageContent;
 }
 
-interface RestaurantMetadata {
-  address: string;
-  name: string;
-  rating: number;
-  price: string;  // Updated to include price range
-  summary: string; // Added summary
-}
+// interface Session {
+//   messages: Message[]; // An array of messages
+// }
 
-interface Restaurant {
-  pageContent: string;
-  metadata: RestaurantMetadata;
-  id: string;
-}
+// interface Sessions {
+//   [sessionId: string]: Session; // Dynamic keys for session IDs
+// }
 
 // Define the Zod schema for the structured output
 const restaurantSchema = z.object({
@@ -126,7 +132,7 @@ async function upsertConversationMessage(user_id: string, session_id: string, ne
   }
 }
 
-export async function POST(req: Request): Promise<Response> {
+export async function POST(req: NextRequest): Promise<Response> {
   if (req.method !== "POST") {
     return NextResponse.json(
       { error: "Only POST requests are allowed" },
@@ -167,7 +173,6 @@ export async function POST(req: Request): Promise<Response> {
     const newMessage: Message = {
       message_type: "restaurant_data",
       content: combinedContent,
-      timestamp: new Date().toISOString(),
     };
 
     // Insert the combined message into MongoDB
@@ -190,7 +195,7 @@ export async function POST(req: Request): Promise<Response> {
     console.time("Load messages into history");
     dbMessages.forEach((dbMessage: Message) => {
       if (dbMessage.message_type === "human_message_no_prompt") {
-        messageHistory.addMessage(new HumanMessage(dbMessage.content));
+        messageHistory.addMessage(new HumanMessage(dbMessage.content as string));
       } else if (dbMessage.message_type === "ai_message" || dbMessage.message_type === "restaurant_data") {
         messageHistory.addMessage(new AIMessage(JSON.stringify(dbMessage.content)));
       }
@@ -211,14 +216,13 @@ export async function POST(req: Request): Promise<Response> {
     const aiResponse = await withHistory.invoke(
       { inputText: message, history: messageHistory },
       config
-    );
+    ) as AIMessageContent;
     console.timeEnd("Generate AI response");
 
     console.time("Insert human message into MongoDB");
     const humanMessage: Message = {
       message_type: "human_message_no_prompt",
       content: message,
-      timestamp: new Date().toISOString(),
     };
     await upsertConversationMessage(user_id, session_id, humanMessage);
     console.timeEnd("Insert human message into MongoDB");
@@ -227,7 +231,6 @@ export async function POST(req: Request): Promise<Response> {
     const aiMessage: Message = {
       message_type: "ai_message",
       content: aiResponse,
-      timestamp: new Date().toISOString(),
     };
     await upsertConversationMessage(user_id, session_id, aiMessage);
     console.timeEnd("Insert AI message into MongoDB");

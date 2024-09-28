@@ -2,10 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Conversation from "@/models/Conversation";
 
-// Type definitions for AI message content and message
+interface Restaurant {
+  name: string;
+  address: string;
+  rating: number;
+  price: string;
+  summary: string;
+}
+
 interface AIMessageContent {
   general_response: string;
-  restaurants: any[]; // Replace `any` with the appropriate type if available
+  restaurants: Restaurant[];
 }
 
 interface Message {
@@ -13,7 +20,20 @@ interface Message {
   content: string | AIMessageContent;
 }
 
-export async function GET(req: Request): Promise<Response> {
+interface Session {
+  messages: Message[]; // An array of messages
+}
+
+interface Sessions {
+  [sessionId: string]: Session; // Dynamic keys for session IDs
+}
+
+interface UserDocument {
+  _id: string; // The user ID (in your case, the email)
+  sessions: Sessions; // The sessions associated with the user
+}
+
+export async function GET(req: NextRequest): Promise<Response> {
   try {
     // Parse query parameters from the URL
     const { searchParams } = new URL(req.url);
@@ -32,17 +52,17 @@ export async function GET(req: Request): Promise<Response> {
     await dbConnect();
 
     // Retrieve the conversation history using Mongoose and use `.lean()` to return a plain JS object
-    const conversation = await Conversation.findOne(
+    const userDocument = await Conversation.findOne(
       { _id: user_id },
       { [`sessions.${session_id}.messages`]: 1 }
-    ).lean();
+    ).lean() as UserDocument;
 
-    console.log('here', conversation);
+    console.log('here', userDocument);
 
     if (
-      !conversation ||
-      !conversation.sessions ||
-      !conversation.sessions[session_id] // Change to array/object syntax with `.lean()`
+      !userDocument ||
+      !userDocument.sessions ||
+      !userDocument.sessions[session_id] // Change to array/object syntax with `.lean()`
     ) {
       return NextResponse.json(
         { error: "No conversation history found" },
@@ -51,29 +71,31 @@ export async function GET(req: Request): Promise<Response> {
     }
 
     // Extract messages from the session
-    const messages: Message[] = conversation.sessions[session_id].messages;
+    const messages: Message[] = userDocument.sessions[session_id].messages;
 
     // Filter and transform messages based on the type
     const filteredMessages: Message[] = messages
       .filter(
-        (message: any) =>
+        (message: Message) =>
           message.message_type === "human_message_no_prompt" ||
           message.message_type === "ai_message"
       )
-      .map((message: any) => {
+      .map((message: Message) => {
         if (message.message_type === "human_message_no_prompt") {
           return {
             message_type: "human_message_no_prompt",
             content: message.content,
           };
         } else if (message.message_type === "ai_message") {
-          return {
-            message_type: "ai_message",
-            content: {
-              general_response: message.content.general_response || "",
-              restaurants: message.content.restaurants || [],
-            },
-          };
+          if (message.content && typeof(message.content) === 'object') {
+            return {
+              message_type: "ai_message",
+              content: {
+                general_response: message.content.general_response || "",
+                restaurants: message.content.restaurants || [],
+              },
+            };
+          }
         }
         return undefined; // Ensure we always return a value
       })
