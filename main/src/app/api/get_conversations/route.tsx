@@ -1,15 +1,47 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Conversation from "@/models/Conversation";
 
-// Type definitions for the session preview
+
+interface Restaurant {
+  name: string;
+  address: string;
+  rating: number;
+  price: string;
+  summary: string;
+}
+
+interface AIMessageContent {
+  general_response: string;
+  restaurants: Restaurant[];
+}
+
+interface Message {
+  message_type: string;
+  content: string | AIMessageContent;
+}
+
 interface Session {
+  last_updated: string;
+  messages: Message[];
+}
+
+interface Sessions {
+  [sessionId: string]: Session;
+}
+
+interface SessionsDataToReturn {
   session_id: string;
   conversation_preview: string;
   last_updated: string;
 }
 
-export async function GET(req: Request): Promise<Response> {
+interface UserDocument {
+  _id: string;
+  sessions: Sessions; 
+}
+
+export async function GET(req: NextRequest): Promise<Response> {
   try {
     // Get the URL and search parameters
     const { searchParams } = new URL(req.url);
@@ -28,7 +60,7 @@ export async function GET(req: Request): Promise<Response> {
     await dbConnect();
 
     // Retrieve the user document to get the current sessions using `.lean()`
-    const userDocument = await Conversation.findOne({ _id: user_id }).lean(); // <-- Add `.lean()` here
+    const userDocument = await Conversation.findOne({ _id: user_id }).lean() as UserDocument;
 
     if (!userDocument || !userDocument.sessions) {
       return NextResponse.json(
@@ -39,12 +71,19 @@ export async function GET(req: Request): Promise<Response> {
 
 
     // Process each session to return the session_id and the general_response as the conversation_preview
-    const sessions: Session[] = [];
-    Object.entries(userDocument.sessions).forEach(([sessionId, sessionData]: [string, any]) => {
-      // Extract the general_response from the message preview
-      const generalResponse = sessionData.messages?.find(
-        (msg: any) => msg.message_type === "ai_message"
-      )?.content.general_response || "No AI messages yet";
+    const sessions: SessionsDataToReturn[] = [];
+
+    Object.entries(userDocument.sessions).forEach(([sessionId, sessionData]: [string, Session]) => {
+      // Find the first AI message
+      const aiMessage = sessionData.messages?.find(
+        (msg: Message) => msg.message_type === "ai_message"
+      );
+
+      // Check if the content is AIMessageContent and extract the general_response
+      let generalResponse = "No AI messages yet";
+      if (aiMessage && typeof aiMessage.content !== 'string') {
+        generalResponse = aiMessage.content.general_response || "No general response";
+      }
 
       // Push the session details into the sessions array
       sessions.push({
@@ -55,7 +94,7 @@ export async function GET(req: Request): Promise<Response> {
     });
 
     // Sort the sessions by last_updated, newest first
-    sessions.sort((a: Session, b: Session) =>
+    sessions.sort((a: SessionsDataToReturn, b: SessionsDataToReturn) =>
       new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime()
     );
 

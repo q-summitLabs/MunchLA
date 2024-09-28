@@ -187,7 +187,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
               >
-                Chat to start discovering, planning, and exploring LA's vibrant
+                Chat to start discovering, planning, and exploring LA&apos;s vibrant
                 food scene with AI
               </motion.p>
               <motion.div

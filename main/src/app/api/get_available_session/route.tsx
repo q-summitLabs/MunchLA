@@ -2,11 +2,37 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Conversation from "@/models/Conversation";
 
-// Interface for request parameters
-interface RequestParams {
-  user_id: string;
+interface Restaurant {
+  name: string;
+  address: string;
+  rating: number;
+  price: string;
+  summary: string;
 }
 
+interface AIMessageContent {
+  general_response: string;
+  restaurants: Restaurant[];
+}
+
+interface Message {
+  message_type: string;
+  content: string | AIMessageContent;
+}
+
+interface Session {
+  messages: Message[]; // An array of messages
+}
+
+interface Sessions {
+  [sessionId: string]: Session; // Dynamic keys for session IDs
+}
+
+interface UserDocument {
+  _id: string;
+  sessions: Sessions; 
+}
+  
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     // Extract query parameters from the URL
@@ -25,7 +51,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     await dbConnect();
 
     // Retrieve the user document using the Conversation model
-    const userDocument = await Conversation.findOne({ _id: user_id }).lean();
+    const userDocument = await Conversation.findOne({ _id: user_id }).lean() as UserDocument;
+    if (!userDocument) {
+      // Handle the case where no user document was found
+      throw new Error(`User document with id ${user_id} not found.`);
+    }
 
     // If user doesn't exist or doesn't have any sessions, return session_id as 1
     if (!userDocument || !userDocument.sessions || Object.keys(userDocument.sessions).length === 0) {
@@ -38,16 +68,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     // Convert the Mongoose document to a plain JS object and retrieve the keys of the sessions object
     const sessionIds = Object.keys(userDocument.sessions);
 
-    console.log('Session IDs:', sessionIds); // This will print just the session keys
-
     let nextSessionId = 1;
     // Find the first missing session_id starting from 1
     while (sessionIds.includes(nextSessionId.toString())) {
       nextSessionId++;
     }
-
-    console.log(nextSessionId);
-
+    
     // Return the next available session ID
     return NextResponse.json(
       { next_session_id: String(nextSessionId) },

@@ -1,9 +1,9 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 
-export const authOptions = {
+const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -12,7 +12,7 @@ export const authOptions = {
   ],
   callbacks: {
     async signIn({ user, account }) {
-      if (account.provider === "google") {
+      if (account && account.provider === "google") {
         const { name, email, image } = user;
         try {
           await dbConnect();
@@ -45,11 +45,15 @@ export const authOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.sub;
-        const dbUser = await User.findById(token.sub);
-        if (dbUser) {
-          session.user.createdAt = dbUser.createdAt.toISOString();
-          session.user.lastLogin = dbUser.lastLogin.toISOString();
+        if (token.sub) {
+          session.user.id = token.sub; // Safe assignment
+          const dbUser = await User.findById(token.sub);
+          if (dbUser) {
+            session.user.createdAt = dbUser.createdAt.toISOString();
+            session.user.lastLogin = dbUser.lastLogin.toISOString();
+          }
+        } else {
+          console.warn("Token sub is undefined"); // Handle the case where token.sub is undefined
         }
       }
       return session;
