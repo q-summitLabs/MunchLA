@@ -52,10 +52,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     // Retrieve the user document using the Conversation model
     const userDocument = await Conversation.findOne({ _id: user_id }).lean() as UserDocument;
-    if (!userDocument) {
-      // Handle the case where no user document was found
-      throw new Error(`User document with id ${user_id} not found.`);
-    }
 
     // If user doesn't exist or doesn't have any sessions, return session_id as 1
     if (!userDocument || !userDocument.sessions || Object.keys(userDocument.sessions).length === 0) {
@@ -73,7 +69,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     while (sessionIds.includes(nextSessionId.toString())) {
       nextSessionId++;
     }
-    
+
     // Return the next available session ID
     return NextResponse.json(
       { next_session_id: String(nextSessionId) },
