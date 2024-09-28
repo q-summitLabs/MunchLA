@@ -42,6 +42,8 @@ import {
 import { useSession } from "next-auth/react";
 import { sendMessage } from "@/api_callers/setters";
 import { RestaurantCard } from "@/components/restaurant_cards/restaurant_cards";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 type AIMessageContent = {
   general_response: string;
@@ -500,7 +502,9 @@ export default function MunchLAChatbot() {
                               : "bg-purple-500 text-white"
                           }`}
                         >
-                          <p>{message.text}</p>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {message.text}
+                          </ReactMarkdown>
                         </div>
                       </div>
                       {message.restaurants && (
