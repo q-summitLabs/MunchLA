@@ -17,23 +17,21 @@ const authOptions: AuthOptions = {
         const { name, email, image } = user;
         try {
           await dbConnect();
-          let dbUser = await User.findOne({ email });
-
-          if (!dbUser) {
-            dbUser = await User.create({
-              name,
-              email,
-              image,
-              googleId: account.providerAccountId,
-              createdAt: new Date(),
-              lastLogin: new Date(),
-            });
-          } else {
-            dbUser.lastLogin = new Date();
-            dbUser.name = name;
-            dbUser.image = image;
-            await dbUser.save();
-          }
+          const dbUser = await User.findOneAndUpdate(
+            { email },
+            {
+              $set: {
+                name,
+                image,
+                googleId: account.providerAccountId,
+                lastLogin: new Date(),
+              },
+              $setOnInsert: {
+                createdAt: new Date(),
+              },
+            },
+            { upsert: true, new: true }
+          );
 
           user.id = dbUser._id.toString();
           return true;
@@ -47,14 +45,16 @@ const authOptions: AuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         if (token.sub) {
-          session.user.id = token.sub; // Safe assignment
-          const dbUser = await User.findById(token.sub);
+          session.user.id = token.sub;
+          const dbUser = await User.findById(token.sub).select(
+            "createdAt lastLogin"
+          );
           if (dbUser) {
             session.user.createdAt = dbUser.createdAt.toISOString();
             session.user.lastLogin = dbUser.lastLogin.toISOString();
           }
         } else {
-          console.warn("Token sub is undefined"); // Handle the case where token.sub is undefined
+          console.warn("Token sub is undefined");
         }
       }
       return session;
