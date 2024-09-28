@@ -23,7 +23,6 @@ async function dbConnect() {
     const opts = {
       bufferCommands: false,
       useNewUrlParser: true,
-      useUnifiedTopology: true,
       // Connection pooling options
       maxPoolSize: 10, // Adjust the pool size as needed
       minPoolSize: 1,
