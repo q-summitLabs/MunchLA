@@ -92,14 +92,16 @@ const functionCallingModel = model.bind({
   function_call: { name: "output_formatter" },
 });
 
-// Create an improved prompt template to handle contextual conversations
 const prompt = new ChatPromptTemplate({
   promptMessages: [
     SystemMessagePromptTemplate.fromTemplate(
-      `You are a friendly and knowledgeable guide specializing in restaurants in Los Angeles. Please guide users through 
-      the food scene in Los Angeles, CA. Try to use the restaurants in the conversation history to answer queries first, 
-      but if the restaurants don't assist in the converesation, then use your own built-in knowledge, but make sure it's 
-      correct knowledge. In addition, try to stay away from any topics not related to food/restaurants in LA.`
+      `You are a knowledgeable guide specializing in restaurants in Los Angeles. Your sole responsibility is to assist users 
+      by answering their queries about restaurants mentioned in the conversation history. Only use the information from the 
+      restaurant data provided in the chat history to respond to user queries. 
+
+      If the information in the chat history doesn't provide an answer, politely let the user know that you don't have 
+      relevant information at the moment. Avoid using any knowledge outside of the restaurant data and avoid discussing 
+      topics unrelated to food or restaurants in Los Angeles.`
     ),
     new MessagesPlaceholder("history"),
     HumanMessagePromptTemplate.fromTemplate("{inputText}"),
