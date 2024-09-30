@@ -92,11 +92,16 @@ const functionCallingModel = model.bind({
   function_call: { name: "output_formatter" },
 });
 
-// Create an improved prompt template to handle contextual conversations
 const prompt = new ChatPromptTemplate({
   promptMessages: [
     SystemMessagePromptTemplate.fromTemplate(
-      "You are a friendly and knowledgeable guide specializing in restaurants in Los Angeles..."
+      `You are a knowledgeable guide specializing in restaurants in Los Angeles. Your sole responsibility is to assist users 
+      by answering their queries about restaurants mentioned in the conversation history. Only use the information from the 
+      restaurant data provided in the chat history to respond to user queries. 
+
+      If the information in the chat history doesn't provide an answer, politely let the user know that you don't have 
+      relevant information at the moment. Avoid using any knowledge outside of the restaurant data and avoid discussing 
+      topics unrelated to food or restaurants in Los Angeles.`
     ),
     new MessagesPlaceholder("history"),
     HumanMessagePromptTemplate.fromTemplate("{inputText}"),
@@ -193,15 +198,17 @@ export async function POST(req: NextRequest): Promise<Response> {
     const messageHistory = new ChatMessageHistory();
 
     console.time("Load messages into history");
-    dbMessages.forEach((dbMessage: Message) => {
+    for (const dbMessage of dbMessages) {
       if (dbMessage.message_type === "human_message_no_prompt") {
-        messageHistory.addMessage(new HumanMessage(dbMessage.content as string));
+        await messageHistory.addMessage(new HumanMessage(dbMessage.content as string));
       } else if (dbMessage.message_type === "ai_message" || dbMessage.message_type === "restaurant_data") {
-        messageHistory.addMessage(new AIMessage(JSON.stringify(dbMessage.content)));
+        await messageHistory.addMessage(new AIMessage(JSON.stringify(dbMessage.content)));
       }
-    });
-    
+      // console.log(`db message content: ${dbMessage.content}`);
+    }
     console.timeEnd("Load messages into history");
+
+    console.log(`message history: ${JSON.stringify(messageHistory)}`);
 
 
     console.time("Generate AI response");
