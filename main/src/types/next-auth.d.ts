@@ -4,6 +4,7 @@ import NextAuth from "next-auth";
 
 declare module "next-auth" {
   interface Session {
+    conversation_preview: string;
     user: {
       id: string;
       name?: string | null;
