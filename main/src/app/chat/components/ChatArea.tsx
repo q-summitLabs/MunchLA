@@ -13,7 +13,7 @@ import { Conversation } from "../types";
 import { Session } from "next-auth";
 import { RestaurantCard } from "@/components/restaurant_cards/restaurant_cards";
 import SuggestionCard from "./SuggestionCard";
-
+import "../styles/custom-scrollbar.css";
 type ChatAreaProps = {
   isFirstInput: boolean;
   currentConversation: Conversation | null;
@@ -47,19 +47,19 @@ export default function ChatArea({
   ];
 
   return (
-    <main className="flex-1 overflow-y-auto p-4 pb-24">
-      <div className="space-y-8 min-h-full flex flex-col justify-center">
+    <main className="flex-1 overflow-y-auto p-4 pb-24 custom-scrollbar">
+      <div className="space-y-6 min-h-full flex flex-col justify-center">
         {isFirstInput ? (
-          <div className="space-y-8">
-            <h1 className="text-4xl font-bold text-left">
+          <div className="space-y-6">
+            <h1 className="text-3xl font-bold text-left">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-yellow-400 dark:from-purple-400 dark:to-yellow-300">
                 Hello, {loginInfo?.user?.name ? loginInfo.user.name : "there"}!
               </span>
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400 text-left">
+            <p className="text-lg text-gray-600 dark:text-gray-400 text-left">
               How can I help you discover LA&apos;s culinary delights today?
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {suggestions.map((suggestion, index) => (
                 <SuggestionCard
                   key={index}
@@ -70,7 +70,7 @@ export default function ChatArea({
             </div>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <AnimatePresence>
               {currentConversation?.messages?.map((message, index) => (
                 <motion.div
@@ -86,7 +86,7 @@ export default function ChatArea({
                     }`}
                   >
                     <div
-                      className={`inline-block p-3 rounded-lg max-w-[80%] ${
+                      className={`inline-block p-2 rounded-lg max-w-[70%] text-sm ${
                         message.isBot
                           ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
                           : "bg-purple-500 text-white"
@@ -98,7 +98,7 @@ export default function ChatArea({
                     </div>
                   </div>
                   {message.restaurants && (
-                    <div className="mt-4 space-y-4">
+                    <div className="mt-3 space-y-3">
                       <AnimatePresence>
                         {message.restaurants.map(
                           (restaurant, restaurantIndex) => (
@@ -124,8 +124,8 @@ export default function ChatArea({
             </AnimatePresence>
             {isLoading && (
               <div className="flex justify-start">
-                <div className="inline-block p-3 rounded-lg bg-gray-200 dark:bg-gray-700">
-                  <Loader2Icon className="h-6 w-6 animate-spin text-purple-500" />
+                <div className="inline-block p-2 rounded-lg bg-gray-200 dark:bg-gray-700">
+                  <Loader2Icon className="h-5 w-5 animate-spin text-purple-500" />
                 </div>
               </div>
             )}
@@ -133,17 +133,17 @@ export default function ChatArea({
               currentConversation.messages &&
               currentConversation.messages.length > 0 && (
                 <div className="flex justify-start space-x-2">
-                  <Button variant="ghost" size="icon">
-                    <ThumbsUpIcon className="h-4 w-4" />
+                  <Button variant="ghost" size="sm">
+                    <ThumbsUpIcon className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="icon">
-                    <ThumbsDownIcon className="h-4 w-4" />
+                  <Button variant="ghost" size="sm">
+                    <ThumbsDownIcon className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="icon">
-                    <ShareIcon className="h-4 w-4" />
+                  <Button variant="ghost" size="sm">
+                    <ShareIcon className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="icon">
-                    <MoreHorizontalIcon className="h-4 w-4" />
+                  <Button variant="ghost" size="sm">
+                    <MoreHorizontalIcon className="h-3 w-3" />
                   </Button>
                 </div>
               )}
