@@ -5,7 +5,7 @@ import {
     fetchConversation,
 } from "@/api_callers/getters";
 import { sendMessage } from "@/api_callers/setters";
-import { Conversation, Session, MessageData } from "../types";
+import { Conversation, Session, MessageData, Restaurant, Message, SessionData } from "../types";
 
 export function useChatState(userId: string | null | undefined) {
     const [prompt, setPrompt] = useState("");
@@ -33,46 +33,88 @@ export function useChatState(userId: string | null | undefined) {
 
     useEffect(() => {
         const fetchSessions = async () => {
-            try {
-                if (!userId) {
-                    return;
-                }
-
-                const response = await fetchUserSessions(userId);
-
-                if (!response) {
-                    throw new Error(`Error: ${response.status}`);
-                }
-
-                const data: Session[] = response["sessions"];
-                setUserSessions(data);
-            } catch (error) {
-                console.error("Failed to fetch sessions", error);
+          try {
+            if (!userId) {
+              return;
             }
+    
+            const response = await fetchUserSessions(userId);
+    
+            if (!response) {
+              throw new Error(`Error: ${response.status}`);
+            }
+    
+            const data: SessionData[] = response["sessions"];
+            console.log(`data: ${JSON.stringify(data)}`);
+            let sessions: Session[] = [];
+    
+            sessions = data.map((item) => ({
+              id: item.session_id,
+              conversation_preview: item.conversation_preview,
+              last_updated: item.last_updated,
+            }));
+            setUserSessions(sessions);
+          } catch (error) {
+            console.error("Failed to fetch sessions", error);
+          }
+        };
+    
+        fetchSessions();
+      }, [userId]);
+
+    useEffect(() => {
+        if (currentConversation) {
+          setIsFirstInput(false);
+        }
+      }, [currentConversation]);
+    
+    const handleSessionClick = async (sessionId: string) => {
+        console.log(sessionId, userId);
+    if (!sessionId || !userId) return;
+    setCurrentChatSession(sessionId);
+    try {
+        const conversation = (await fetchConversation(
+        userId,
+        sessionId
+        )) as MessageData[];
+        console.log(`convo: ${JSON.stringify(conversation)}`);
+        const messages: Message[] = [];
+
+        conversation.forEach((message) => {
+        let text = "";
+        let isBot = false;
+        let restaurants: Restaurant[] | undefined;
+
+        if (message.message_type === "ai_message") {
+            if (typeof message.content === "object") {
+            text = message.content.general_response;
+            isBot = true;
+            restaurants = message.content.restaurants;
+            }
+        } else {
+            if (typeof message.content === "string") {
+            text = message.content;
+            isBot = false;
+            restaurants = [];
+            }
+        }
+        messages.push({
+            text,
+            isBot,
+            restaurants,
+        });
+        });
+
+        const conversationData: Conversation = {
+        id: sessionId,
+        title: `Chat Session ${sessionId}`,
+        messages,
         };
 
-        fetchSessions();
-    }, [userId]);
-
-    const handleSessionClick = async (sessionId: string) => {
-        if (!sessionId || !userId) return;
-        setCurrentChatSession(sessionId);
-        try {
-            const conversation = await fetchConversation(userId, sessionId) as MessageData[];
-            const messages = conversation.map((message) => ({
-                text: typeof message.content === 'string' ? message.content : message.content.general_response,
-                isBot: message.message_type === 'ai_message',
-                restaurants: message.message_type === 'ai_message' && typeof message.content !== 'string' ? message.content.restaurants : undefined,
-            }));
-
-            setCurrentConversation({
-                id: sessionId,
-                title: `Chat Session ${sessionId}`,
-                messages,
-            });
-        } catch (error) {
-            console.error("Error fetching conversation:", error);
-        }
+        setCurrentConversation(conversationData);
+    } catch (error) {
+        console.error("Error fetching conversation:", error);
+    }
     };
 
     const handleRemoveSession = async (sessionId: string) => {
