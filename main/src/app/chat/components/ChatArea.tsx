@@ -1,12 +1,12 @@
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Loader2Icon,
-  ThumbsUpIcon,
-  ThumbsDownIcon,
-  ShareIcon,
-  MoreHorizontalIcon,
+  // ThumbsUpIcon,
+  // ThumbsDownIcon,
+  // ShareIcon,
+  // MoreHorizontalIcon,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Conversation } from "../types";
