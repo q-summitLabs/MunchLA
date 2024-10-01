@@ -129,7 +129,7 @@ export default function ChatArea({
                 </div>
               </div>
             )}
-            {currentConversation &&
+            {/* {currentConversation &&
               currentConversation.messages &&
               currentConversation.messages.length > 0 && (
                 <div className="flex justify-start space-x-2">
@@ -146,7 +146,7 @@ export default function ChatArea({
                     <MoreHorizontalIcon className="h-3 w-3" />
                   </Button>
                 </div>
-              )}
+              )} */}
           </div>
         )}
       </div>
