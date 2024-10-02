@@ -1,12 +1,4 @@
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Loader2Icon,
-  // ThumbsUpIcon,
-  // ThumbsDownIcon,
-  // ShareIcon,
-  // MoreHorizontalIcon,
-} from "lucide-react";
-// import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Conversation } from "../types";
@@ -14,12 +6,122 @@ import { Session } from "next-auth";
 import { RestaurantCard } from "@/components/restaurant_cards/restaurant_cards";
 import SuggestionCard from "./SuggestionCard";
 import "../styles/custom-scrollbar.css";
+import "../styles/frying-pan-animation.css";
+
 type ChatAreaProps = {
   isFirstInput: boolean;
   currentConversation: Conversation | null;
   isLoading: boolean;
   loginInfo: Session | null;
 };
+
+const FryingPanAnimation = () => (
+  <div className="inline-flex items-center space-x-2 p-2 bg-gray-200 dark:bg-gray-700 rounded-lg">
+    <svg
+      className="pl"
+      viewBox="0 0 128 128"
+      width="16"
+      height="16"
+      role="img"
+      aria-label="A pan being used to flip a blob resembling bacon as it splashes drops of grease in and out"
+    >
+      <clipPath id="pan-clip">
+        <rect rx="12" ry="14" x="8" y="52" width="68" height="28" />
+      </clipPath>
+      <defs>
+        <linearGradient id="pl-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#000" />
+          <stop offset="100%" stopColor="#fff" />
+        </linearGradient>
+        <mask id="pl-mask">
+          <rect x="0" y="0" width="88" height="80" fill="url(#pl-grad)" />
+        </mask>
+      </defs>
+      <g fill="currentColor">
+        <g
+          fill="none"
+          strokeDasharray="20 221"
+          strokeDashoffset="20"
+          strokeLinecap="round"
+          strokeWidth="4"
+        >
+          <g stroke="hsl(38,90%,50%)">
+            <circle
+              className="pl__ring"
+              cx="44"
+              cy="40"
+              r="35"
+              transform="rotate(90,44,40)"
+            />
+          </g>
+          <g stroke="hsl(8,90%,40%)" mask="url(#pl-mask)">
+            <circle
+              className="pl__ring"
+              cx="44"
+              cy="40"
+              r="35"
+              transform="rotate(90,44,40)"
+            />
+          </g>
+        </g>
+        <g fill="hsla(223,10%,70%,0)">
+          <g className="pl__drop pl__drop--1">
+            <circle className="pl__drop-inner" cx="13" cy="60" r="2" />
+          </g>
+          <g className="pl__drop pl__drop--2">
+            <circle className="pl__drop-inner" cx="13" cy="60" r="2" />
+          </g>
+          <g className="pl__drop pl__drop--3">
+            <circle className="pl__drop-inner" cx="67" cy="72" r="2" />
+          </g>
+          <g className="pl__drop pl__drop--4">
+            <circle className="pl__drop-inner" cx="67" cy="72" r="2" />
+          </g>
+          <g className="pl__drop pl__drop--5">
+            <circle className="pl__drop-inner" cx="67" cy="72" r="2" />
+          </g>
+        </g>
+        <g className="pl__pan">
+          <rect
+            rx="2"
+            ry="2"
+            x="4"
+            y="66"
+            width="68"
+            height="14"
+            clipPath="url(#pan-clip)"
+            id="pan"
+          />
+          <rect rx="2" ry="2" x="76" y="66" width="48" height="7" />
+        </g>
+        <rect
+          className="pl__shadow"
+          fill="hsla(223,10%,50%,0.2)"
+          rx="3.5"
+          ry="3.5"
+          x="10"
+          y="121"
+          width="60"
+          height="7"
+        />
+      </g>
+    </svg>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{
+        opacity: [0, 1, 0],
+      }}
+      transition={{
+        duration: 1,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+      className="text-purple-500 font-semibold text-sm"
+    >
+      Cooking up a response...
+    </motion.div>
+  </div>
+);
 
 export default function ChatArea({
   isFirstInput,
@@ -124,29 +226,9 @@ export default function ChatArea({
             </AnimatePresence>
             {isLoading && (
               <div className="flex justify-start">
-                <div className="inline-block p-2 rounded-lg bg-gray-200 dark:bg-gray-700">
-                  <Loader2Icon className="h-5 w-5 animate-spin text-purple-500" />
-                </div>
+                <FryingPanAnimation />
               </div>
             )}
-            {/* {currentConversation &&
-              currentConversation.messages &&
-              currentConversation.messages.length > 0 && (
-                <div className="flex justify-start space-x-2">
-                  <Button variant="ghost" size="sm">
-                    <ThumbsUpIcon className="h-3 w-3" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <ThumbsDownIcon className="h-3 w-3" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <ShareIcon className="h-3 w-3" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <MoreHorizontalIcon className="h-3 w-3" />
-                  </Button>
-                </div>
-              )} */}
           </div>
         )}
       </div>
