@@ -22,6 +22,7 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
 import dbConnect from "@/lib/mongodb";
 import Conversation from "@/models/Conversation";
+import middleware from "../../middleware";
 
 // Type definitions for the request body and database message
 interface RequestBody {
@@ -131,6 +132,15 @@ async function upsertConversationMessage(user_id: string, session_id: string, ne
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
+  const success = await middleware(req);
+  if (!success) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded. Please try again after a cooldown." },
+      { status: 429}
+    )
+  }
+
+
   if (req.method !== "POST") {
     return NextResponse.json(
       { error: "Only POST requests are allowed" },

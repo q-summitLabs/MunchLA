@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Conversation from "@/models/Conversation";
+import middleware from "../../middleware";
 
 interface Restaurant {
   name: string;
@@ -34,6 +35,13 @@ interface UserDocument {
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  const success = await middleware(req);
+  if (!success) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded. Please try again after a cooldown." },
+      { status: 429}
+    )
+  }
   try {
     // Extract query parameters from the URL
     const { searchParams } = new URL(req.url);
