@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { Ratelimit } from '@upstash/ratelimit';
 import { kv } from '@vercel/kv';
 
@@ -12,6 +12,6 @@ export default async function middleware(request: NextRequest) {
     const { success, pending, limit, reset, remaining } = await ratelimit.limit(
     ip
     );
-    console.log('success', success);
+    console.log(pending, limit, reset, remaining);
     return success;
 }
