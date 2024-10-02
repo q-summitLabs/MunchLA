@@ -1,0 +1,485 @@
+.pl {
+  width: 2.5em;
+  height: 2.5em;
+}
+
+.pl__ring {
+  animation: ringA 2s linear infinite;
+}
+
+.pl__ring--a {
+  stroke: #f42f25;
+}
+
+.pl__ring--b {
+  animation-name: ringB;
+  stroke: #f49725;
+}
+
+.pl__ring--c {
+  animation-name: ringC;
+  stroke: #255ff4;
+}
+
+.pl__ring--d {
+  animation-name: ringD;
+  stroke: #f42582;
+}
+
+/* Animations */
+@keyframes ringA {
+  from,
+  4% {
+    stroke-dasharray: 0 660;
+    stroke-width: 20;
+    stroke-dashoffset: -330;
+  }
+  12% {
+    stroke-dasharray: 60 600;
+    stroke-width: 30;
+    stroke-dashoffset: -335;
+  }
+  32% {
+    stroke-dasharray: 60 600;
+    stroke-width: 30;
+    stroke-dashoffset: -595;
+  }
+  40%,
+  54% {
+    stroke-dasharray: 0 660;
+    stroke-width: 20;
+    stroke-dashoffset: -660;
+  }
+  62% {
+    stroke-dasharray: 60 600;
+    stroke-width: 30;
+    stroke-dashoffset: -665;
+  }
+  82% {
+    stroke-dasharray: 60 600;
+    stroke-width: 30;
+    stroke-dashoffset: -925;
+  }
+  90%,
+  to {
+    stroke-dasharray: 0 660;
+    stroke-width: 20;
+    stroke-dashoffset: -990;
+  }
+}
+
+@keyframes ringB {
+  from,
+  12% {
+    stroke-dasharray: 0 220;
+    stroke-width: 20;
+    stroke-dashoffset: -110;
+  }
+  20% {
+    stroke-dasharray: 20 200;
+    stroke-width: 30;
+    stroke-dashoffset: -115;
+  }
+  40% {
+    stroke-dasharray: 20 200;
+    stroke-width: 30;
+    stroke-dashoffset: -195;
+  }
+  48%,
+  62% {
+    stroke-dasharray: 0 220;
+    stroke-width: 20;
+    stroke-dashoffset: -220;
+  }
+  70% {
+    stroke-dasharray: 20 200;
+    stroke-width: 30;
+    stroke-dashoffset: -225;
+  }
+  90% {
+    stroke-dasharray: 20 200;
+    stroke-width: 30;
+    stroke-dashoffset: -305;
+  }
+  98%,
+  to {
+    stroke-dasharray: 0 220;
+    stroke-width: 20;
+    stroke-dashoffset: -330;
+  }
+}
+
+@keyframes ringC {
+  from {
+    stroke-dasharray: 0 440;
+    stroke-width: 20;
+    stroke-dashoffset: 0;
+  }
+  8% {
+    stroke-dasharray: 40 400;
+    stroke-width: 30;
+    stroke-dashoffset: -5;
+  }
+  28% {
+    stroke-dasharray: 40 400;
+    stroke-width: 30;
+    stroke-dashoffset: -175;
+  }
+  36%,
+  58% {
+    stroke-dasharray: 0 440;
+    stroke-width: 20;
+    stroke-dashoffset: -220;
+  }
+  66% {
+    stroke-dasharray: 40 400;
+    stroke-width: 30;
+    stroke-dashoffset: -225;
+  }
+  86% {
+    stroke-dasharray: 40 400;
+    stroke-width: 30;
+    stroke-dashoffset: -395;
+  }
+  94%,
+  to {
+    stroke-dasharray: 0 440;
+    stroke-width: 20;
+    stroke-dashoffset: -440;
+  }
+}
+
+@keyframes ringD {
+  from,
+  8% {
+    stroke-dasharray: 0 440;
+    stroke-width: 20;
+    stroke-dashoffset: 0;
+  }
+  16% {
+    stroke-dasharray: 40 400;
+    stroke-width: 30;
+    stroke-dashoffset: -5;
+  }
+  36% {
+    stroke-dasharray: 40 400;
+    stroke-width: 30;
+    stroke-dashoffset: -175;
+  }
+  44%,
+  50% {
+    stroke-dasharray: 0 440;
+    stroke-width: 20;
+    stroke-dashoffset: -220;
+  }
+  58% {
+    stroke-dasharray: 40 400;
+    stroke-width: 30;
+    stroke-dashoffset: -225;
+  }
+  78% {
+    stroke-dasharray: 40 400;
+    stroke-width: 30;
+    stroke-dashoffset: -395;
+  }
+  86%,
+  to {
+    stroke-dasharray: 0 440;
+    stroke-width: 20;
+    stroke-dashoffset: -440;
+  }
+}
+
+.pl__drop,
+.pl__drop-inner,
+.pl__pan,
+.pl__ring,
+.pl__shadow {
+  animation: pan 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.pl__drop {
+  transform-origin: 13px 60px;
+}
+
+.pl__drop-inner {
+  animation-timing-function: cubic-bezier(0.33, 0.84, 0.67, 0.84);
+}
+
+.pl__drop--1 {
+  animation-name: drop-1;
+}
+.pl__drop--2 {
+  animation-name: drop-2;
+}
+.pl__drop--3 {
+  animation-name: drop-3;
+}
+.pl__drop--4 {
+  animation-name: drop-4;
+}
+.pl__drop--5 {
+  animation-name: drop-5;
+}
+
+.pl__drop--1 .pl__drop-inner {
+  animation-name: drop-1-inner;
+}
+.pl__drop--2 .pl__drop-inner {
+  animation-name: drop-2-inner;
+}
+.pl__drop--3 .pl__drop-inner {
+  animation-name: drop-3-inner;
+}
+.pl__drop--4 .pl__drop-inner {
+  animation-name: drop-4-inner;
+}
+.pl__drop--5 .pl__drop-inner {
+  animation-name: drop-5-inner;
+}
+
+.pl__pan {
+  transform-origin: 36px 74px;
+}
+
+.pl__ring {
+  animation-name: flip-ring;
+}
+
+.pl__shadow {
+  animation-name: pan-shadow;
+  transform-origin: 36px 124.5px;
+}
+
+@keyframes drop-1 {
+  from {
+    animation-timing-function: steps(1, end);
+    transform: translate(0, 0);
+    visibility: hidden;
+  }
+  30% {
+    animation-timing-function: linear;
+    transform: translate(0, 0);
+    visibility: visible;
+  }
+  50%,
+  to {
+    transform: translate(-6px, 0);
+  }
+}
+
+@keyframes drop-1-inner {
+  from,
+  30% {
+    fill: hsl(223, 10%, 70%, 1);
+    transform: translate(0, 0);
+  }
+  50%,
+  to {
+    fill: hsl(223, 10%, 70%, 0);
+    transform: translate(0, -27px);
+  }
+}
+
+@keyframes drop-2 {
+  from {
+    animation-timing-function: steps(1, end);
+    transform: translate(0, 0);
+    visibility: hidden;
+  }
+  30% {
+    animation-timing-function: linear;
+    transform: translate(0, 0);
+    visibility: visible;
+  }
+  50%,
+  to {
+    transform: translate(-8px, 0);
+  }
+}
+
+@keyframes drop-2-inner {
+  from,
+  30% {
+    fill: hsl(223, 10%, 70%, 1);
+    transform: translate(0, 0);
+  }
+  50%,
+  to {
+    fill: hsl(223, 10%, 70%, 0);
+    transform: translate(0, -9px);
+  }
+}
+
+@keyframes drop-3 {
+  from {
+    animation-timing-function: steps(1, end);
+    transform: translate(0, 0);
+    visibility: hidden;
+  }
+  78% {
+    animation-timing-function: linear;
+    transform: translate(0, 0);
+    visibility: visible;
+  }
+  98%,
+  to {
+    transform: translate(-24px, 0);
+  }
+}
+
+@keyframes drop-3-inner {
+  from,
+  78% {
+    fill: hsl(223, 10%, 70%, 1);
+    transform: translate(0, 0);
+  }
+  98%,
+  to {
+    fill: hsl(223, 10%, 70%, 0);
+    transform: translate(0, -28px);
+  }
+}
+
+@keyframes drop-4 {
+  from {
+    animation-timing-function: steps(1, end);
+    transform: translate(0, 0);
+    visibility: hidden;
+  }
+  78% {
+    animation-timing-function: linear;
+    transform: translate(0, 0);
+    visibility: visible;
+  }
+  98%,
+  to {
+    transform: translate(-8px, 0);
+  }
+}
+
+@keyframes drop-4-inner {
+  from,
+  78% {
+    fill: hsl(223, 10%, 70%, 1);
+    transform: translate(0, 0);
+  }
+  98%,
+  to {
+    fill: hsl(223, 10%, 70%, 0);
+    transform: translate(0, -36px);
+  }
+}
+
+@keyframes drop-5 {
+  from {
+    animation-timing-function: steps(1, end);
+    transform: translate(0, 0);
+    visibility: hidden;
+  }
+  78% {
+    animation-timing-function: linear;
+    transform: translate(0, 0);
+    visibility: visible;
+  }
+  98%,
+  to {
+    transform: translate(8px, 0);
+  }
+}
+
+@keyframes drop-5-inner {
+  from,
+  78% {
+    fill: hsl(223, 10%, 70%, 1);
+    transform: translate(0, 0);
+  }
+  98%,
+  to {
+    fill: hsl(223, 10%, 70%, 0);
+    transform: translate(0, -32px);
+  }
+}
+
+@keyframes flip-ring {
+  from,
+  27% {
+    animation-timing-function: cubic-bezier(0.33, 0.84, 0.67, 0.84);
+    stroke-dashoffset: 20;
+    stroke-width: 4px;
+  }
+  53.5% {
+    animation-timing-function: cubic-bezier(0.33, 0.16, 0.67, 0.16);
+    stroke-dashoffset: -100;
+    stroke-width: 10px;
+  }
+  80%,
+  to {
+    stroke-dashoffset: -220;
+    stroke-width: 4px;
+  }
+}
+
+@keyframes pan {
+  from,
+  88%,
+  to {
+    transform: translate(0, 0) rotate(0);
+  }
+  20% {
+    animation-timing-function: cubic-bezier(0.33, 0.16, 0.67, 0.16);
+    transform: translate(-5px, 0) rotate(-30deg);
+  }
+  30% {
+    animation-timing-function: cubic-bezier(0.33, 0.84, 0.67, 0.84);
+    transform: translate(0, 0) rotate(20deg);
+  }
+  60%,
+  78% {
+    animation-timing-function: linear;
+    transform: translate(0, 0) rotate(0);
+  }
+  81.33% {
+    animation-timing-function: linear;
+    transform: translate(0, 4px) rotate(0);
+  }
+  84.67% {
+    animation-timing-function: linear;
+    transform: translate(0, -2px) rotate(0);
+  }
+}
+
+@keyframes pan-shadow {
+  from,
+  88%,
+  to {
+    fill: hsla(223, 10%, 50%, 0.2);
+    transform: scaleX(1);
+  }
+  20% {
+    animation-timing-function: cubic-bezier(0.33, 0.16, 0.67, 0.16);
+    fill: hsla(223, 10%, 50%, 0.2);
+    transform: scaleX(0.77);
+  }
+  30% {
+    animation-timing-function: cubic-bezier(0.33, 0.84, 0.67, 0.84);
+    fill: hsla(223, 10%, 50%, 0.2);
+    transform: scaleX(1);
+  }
+  60%,
+  78% {
+    animation-timing-function: linear;
+    fill: hsla(223, 10%, 50%, 0.2);
+    transform: scaleX(1);
+  }
+  81.33% {
+    animation-timing-function: linear;
+    fill: hsla(223, 10%, 50%, 0.25);
+    transform: scaleX(0.87);
+  }
+  84.67% {
+    animation-timing-function: linear;
+    fill: hsla(223, 10%, 50%, 0.225);
+    transform: scaleX(1.065);
+  }
+}
