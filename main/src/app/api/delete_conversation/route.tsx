@@ -4,12 +4,6 @@ import dbConnect from "@/lib/mongodb";
 import Conversation from "@/models/Conversation";
 import { RequestBody } from "@/datatypes/dataTypes";
 
-// interface RequestBody {
-//     user_id: string;
-//     session_id: string;
-//     message: string;
-// }
-
 export async function POST (req: NextRequest): Promise<Response> {
     const success = await middleware(req);
     if (!success) {
