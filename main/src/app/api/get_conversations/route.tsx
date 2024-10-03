@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
 import middleware from "../../middleware";
-
 
 interface Restaurant {
   name: string;
@@ -39,7 +38,7 @@ interface SessionsDataToReturn {
 
 interface UserDocument {
   _id: string;
-  sessions: Sessions; 
+  sessions: Sessions;
 }
 
 export async function GET(req: NextRequest): Promise<Response> {
@@ -47,8 +46,8 @@ export async function GET(req: NextRequest): Promise<Response> {
   if (!success) {
     return NextResponse.json(
       { error: "Rate limit exceeded. Please try again after a cooldown." },
-      { status: 429}
-    )
+      { status: 429 }
+    );
   }
   try {
     // Get the URL and search parameters
@@ -68,7 +67,9 @@ export async function GET(req: NextRequest): Promise<Response> {
     await dbConnect();
 
     // Retrieve the user document to get the current sessions using `.lean()`
-    const userDocument = await Conversation.findOne({ _id: user_id }).lean() as UserDocument;
+    const userDocument = (await Conversation.findOne({
+      _id: user_id,
+    }).lean()) as UserDocument;
 
     if (!userDocument || !userDocument.sessions) {
       return NextResponse.json(
@@ -77,33 +78,36 @@ export async function GET(req: NextRequest): Promise<Response> {
       );
     }
 
-
     // Process each session to return the session_id and the general_response as the conversation_preview
     const sessions: SessionsDataToReturn[] = [];
 
-    Object.entries(userDocument.sessions).forEach(([sessionId, sessionData]: [string, Session]) => {
-      // Find the first AI message
-      const aiMessage = sessionData.messages?.find(
-        (msg: Message) => msg.message_type === "ai_message"
-      );
+    Object.entries(userDocument.sessions).forEach(
+      ([sessionId, sessionData]: [string, Session]) => {
+        // Find the first AI message
+        const aiMessage = sessionData.messages?.find(
+          (msg: Message) => msg.message_type === "ai_message"
+        );
 
-      // Check if the content is AIMessageContent and extract the general_response
-      let generalResponse = "No AI messages yet";
-      if (aiMessage && typeof aiMessage.content !== 'string') {
-        generalResponse = aiMessage.content.general_response || "No general response";
+        // Check if the content is AIMessageContent and extract the general_response
+        let generalResponse = "No AI messages yet";
+        if (aiMessage && typeof aiMessage.content !== "string") {
+          generalResponse =
+            aiMessage.content.general_response || "No general response";
+        }
+
+        // Push the session details into the sessions array
+        sessions.push({
+          session_id: sessionId,
+          conversation_preview: generalResponse,
+          last_updated: sessionData.last_updated || new Date().toISOString(),
+        });
       }
-
-      // Push the session details into the sessions array
-      sessions.push({
-        session_id: sessionId,
-        conversation_preview: generalResponse,
-        last_updated: sessionData.last_updated || new Date().toISOString(),
-      });
-    });
+    );
 
     // Sort the sessions by last_updated, newest first
-    sessions.sort((a: SessionsDataToReturn, b: SessionsDataToReturn) =>
-      new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime()
+    sessions.sort(
+      (a: SessionsDataToReturn, b: SessionsDataToReturn) =>
+        new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime()
     );
 
     // Return the list of sessions with their conversation previews

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
 import middleware from "../../middleware";
 
@@ -39,8 +39,8 @@ export async function GET(req: NextRequest): Promise<Response> {
   if (!success) {
     return NextResponse.json(
       { error: "Rate limit exceeded. Please try again after a cooldown." },
-      { status: 429}
-    )
+      { status: 429 }
+    );
   }
   try {
     // Parse query parameters from the URL
