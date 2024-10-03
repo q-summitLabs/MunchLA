@@ -2,14 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import middleware from "../../middleware";
 import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
+import { RequestBody } from "@/datatypes/dataTypes";
 
-interface RequestBody {
-  user_id: string;
-  session_id: string;
-  message: string;
-}
-
-export async function POST(req: NextRequest): Promise<Response> {
+export async function POST (req: NextRequest): Promise<Response> {
   const success = await middleware(req);
   if (!success) {
     return NextResponse.json(

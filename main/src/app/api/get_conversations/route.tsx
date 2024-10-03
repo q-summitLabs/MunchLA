@@ -2,44 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
 import middleware from "../../middleware";
-
-interface Restaurant {
-  name: string;
-  address: string;
-  rating: number;
-  price: string;
-  summary: string;
-}
-
-interface AIMessageContent {
-  general_response: string;
-  restaurants: Restaurant[];
-}
-
-interface Message {
-  message_type: string;
-  content: string | AIMessageContent;
-}
-
-interface Session {
-  last_updated: string;
-  messages: Message[];
-}
-
-interface Sessions {
-  [sessionId: string]: Session;
-}
-
-interface SessionsDataToReturn {
-  session_id: string;
-  conversation_preview: string;
-  last_updated: string;
-}
-
-interface UserDocument {
-  _id: string;
-  sessions: Sessions;
-}
+import { Message, Session, SessionsDataToReturn, UserDocument } from "@/datatypes/dataTypes";
 
 export async function GET(req: NextRequest): Promise<Response> {
   const success = await middleware(req);
