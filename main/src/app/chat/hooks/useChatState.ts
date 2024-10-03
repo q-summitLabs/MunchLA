@@ -4,7 +4,7 @@ import {
     fetchNextAvailableChatSession,
     fetchConversation,
 } from "@/api_callers/getters";
-import { sendMessage } from "@/api_callers/setters";
+import { sendMessage, deleteConversation } from "@/api_callers/setters";
 import { Conversation, Session, MessageData, Restaurant, Message, SessionData } from "../types";
 
 export function useChatState(userId: string | null | undefined) {
@@ -115,16 +115,34 @@ export function useChatState(userId: string | null | undefined) {
     };
 
     const handleRemoveSession = async (sessionId: string) => {
-        setUserSessions((prevSessions) =>
-            prevSessions.filter((session) => session.id !== sessionId)
-        );
-
-        if (currentChatSession === sessionId) {
-            setCurrentConversation(null);
-            setCurrentChatSession(null);
-            setIsFirstInput(true);
+        if (!userId) {
+          console.error("Invalid user ID");
+          return;
         }
-    };
+      
+        try {
+          const status = await deleteConversation(userId, sessionId);
+      
+          if (!status) {
+            console.error("Failed to delete conversation");
+            return;
+          }
+      
+          setUserSessions((prevSessions) =>
+            prevSessions.filter((session) => session.id !== sessionId)
+          );
+      
+          if (currentChatSession === sessionId) {
+            const newSession = await fetchNextAvailableChatSession(userId);
+            setCurrentChatSession(newSession);
+            setCurrentConversation(null);
+            setIsFirstInput(true);
+          }
+        } catch (error) {
+          console.error("Error occurred while removing session:", error);
+        }
+      };
+      
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
