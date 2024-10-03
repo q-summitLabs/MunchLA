@@ -20,7 +20,7 @@ import { JsonOutputFunctionsParser } from "langchain/output_parsers";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
 import middleware from "../../middleware";
 
@@ -106,7 +106,11 @@ const prompt = new ChatPromptTemplate({
 const outputParser = new JsonOutputFunctionsParser();
 const chain = prompt.pipe(functionCallingModel).pipe(outputParser);
 
-async function upsertConversationMessage(user_id: string, session_id: string, newMessage: Message) {
+async function upsertConversationMessage(
+  user_id: string,
+  session_id: string,
+  newMessage: Message
+) {
   const currentTime = new Date().toISOString();
 
   try {
@@ -136,10 +140,9 @@ export async function POST(req: NextRequest): Promise<Response> {
   if (!success) {
     return NextResponse.json(
       { error: "Rate limit exceeded. Please try again after a cooldown." },
-      { status: 429}
-    )
+      { status: 429 }
+    );
   }
-
 
   if (req.method !== "POST") {
     return NextResponse.json(
@@ -185,16 +188,25 @@ export async function POST(req: NextRequest): Promise<Response> {
       { [`sessions.${session_id}.messages`]: 1, _id: 0 }
     ).exec();
 
-    const dbMessages: Message[] = conversation ? conversation.sessions.get(session_id)?.messages || [] : [];
+    const dbMessages: Message[] = conversation
+      ? conversation.sessions.get(session_id)?.messages || []
+      : [];
 
     // Create a new message history instance for the current session
     const messageHistory = new ChatMessageHistory();
 
     for (const dbMessage of dbMessages) {
       if (dbMessage.message_type === "human_message_no_prompt") {
-        await messageHistory.addMessage(new HumanMessage(dbMessage.content as string));
-      } else if (dbMessage.message_type === "ai_message" || dbMessage.message_type === "restaurant_data") {
-        await messageHistory.addMessage(new AIMessage(JSON.stringify(dbMessage.content)));
+        await messageHistory.addMessage(
+          new HumanMessage(dbMessage.content as string)
+        );
+      } else if (
+        dbMessage.message_type === "ai_message" ||
+        dbMessage.message_type === "restaurant_data"
+      ) {
+        await messageHistory.addMessage(
+          new AIMessage(JSON.stringify(dbMessage.content))
+        );
       }
     }
 
@@ -206,10 +218,10 @@ export async function POST(req: NextRequest): Promise<Response> {
     });
 
     const config: RunnableConfig = { configurable: { sessionId: session_id } };
-    const aiResponse = await withHistory.invoke(
+    const aiResponse = (await withHistory.invoke(
       { inputText: message, history: messageHistory },
       config
-    ) as AIMessageContent;
+    )) as AIMessageContent;
 
     const humanMessage: Message = {
       message_type: "human_message_no_prompt",
