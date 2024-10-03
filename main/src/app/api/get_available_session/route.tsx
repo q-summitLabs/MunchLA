@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
 import middleware from "../../middleware";
 import { UserDocument } from "@/datatypes/dataTypes";
@@ -9,8 +9,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   if (!success) {
     return NextResponse.json(
       { error: "Rate limit exceeded. Please try again after a cooldown." },
-      { status: 429}
-    )
+      { status: 429 }
+    );
   }
   try {
     // Extract query parameters from the URL
@@ -29,7 +29,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const userDocument = (await Conversation.findOne({
       _id: user_id,
     }).lean()) as UserDocument;
-
 
     // If user doesn't exist or doesn't have any sessions, return session_id as 1
     if (

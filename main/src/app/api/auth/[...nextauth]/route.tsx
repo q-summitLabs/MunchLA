@@ -1,6 +1,6 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/db";
 import User from "@/models/User";
 
 if (
