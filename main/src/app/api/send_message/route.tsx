@@ -23,31 +23,7 @@ import { PineconeStore } from "@langchain/pinecone";
 import dbConnect from "@/lib/mongodb";
 import Conversation from "@/models/Conversation";
 import middleware from "../../middleware";
-
-// Type definitions for the request body and database message
-interface RequestBody {
-  user_id: string;
-  session_id: string;
-  message: string;
-}
-
-interface Restaurant {
-  name: string;
-  address: string;
-  rating: number;
-  price: string;
-  summary: string;
-}
-
-interface AIMessageContent {
-  general_response: string;
-  restaurants: Restaurant[];
-}
-
-interface Message {
-  message_type: string;
-  content: string | AIMessageContent;
-}
+import { RequestBody, AIMessageContent, Message } from "@/datatypes/dataTypes";
 
 // Define the Zod schema for the structured output
 const restaurantSchema = z.object({

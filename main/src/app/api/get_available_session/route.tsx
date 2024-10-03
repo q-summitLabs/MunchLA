@@ -2,37 +2,38 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Conversation from "@/models/Conversation";
 import middleware from "../../middleware";
+import { UserDocument } from "@/datatypes/dataTypes";
 
-interface Restaurant {
-  name: string;
-  address: string;
-  rating: number;
-  price: string;
-  summary: string;
-}
+// interface Restaurant {
+//   name: string;
+//   address: string;
+//   rating: number;
+//   price: string;
+//   summary: string;
+// }
 
-interface AIMessageContent {
-  general_response: string;
-  restaurants: Restaurant[];
-}
+// interface AIMessageContent {
+//   general_response: string;
+//   restaurants: Restaurant[];
+// }
 
-interface Message {
-  message_type: string;
-  content: string | AIMessageContent;
-}
+// interface Message {
+//   message_type: string;
+//   content: string | AIMessageContent;
+// }
 
-interface Session {
-  messages: Message[]; // An array of messages
-}
+// interface Session {
+//   messages: Message[];
+// }
 
-interface Sessions {
-  [sessionId: string]: Session; // Dynamic keys for session IDs
-}
+// interface Sessions {
+//   [sessionId: string]: Session;
+// }
 
-interface UserDocument {
-  _id: string;
-  sessions: Sessions;
-}
+// interface UserDocument {
+//   _id: string;
+//   sessions: Sessions;
+// }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const success = await middleware(req);
