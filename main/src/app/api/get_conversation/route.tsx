@@ -2,37 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
 import middleware from "../../middleware";
-
-interface Restaurant {
-  name: string;
-  address: string;
-  rating: number;
-  price: string;
-  summary: string;
-}
-
-interface AIMessageContent {
-  general_response: string;
-  restaurants: Restaurant[];
-}
-
-interface Message {
-  message_type: string;
-  content: string | AIMessageContent;
-}
-
-interface Session {
-  messages: Message[]; // An array of messages
-}
-
-interface Sessions {
-  [sessionId: string]: Session; // Dynamic keys for session IDs
-}
-
-interface UserDocument {
-  _id: string; // The user ID (in your case, the email)
-  sessions: Sessions; // The sessions associated with the user
-}
+import { Message, UserDocument } from "@/datatypes/dataTypes";
 
 export async function GET(req: NextRequest): Promise<Response> {
   const success = await middleware(req);

@@ -3,8 +3,8 @@ import {
     fetchUserSessions,
     fetchNextAvailableChatSession,
     fetchConversation,
-} from "@/api_callers/getters";
-import { sendMessage, deleteConversation } from "@/api_callers/setters";
+} from "@/middlewareHelpers/getters";
+import { sendMessage, deleteConversation } from "@/middlewareHelpers/setters";
 import { Conversation, Session, MessageData, Restaurant, Message, SessionData } from "../types";
 
 export function useChatState(userId: string | null | undefined) {
