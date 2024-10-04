@@ -15,6 +15,7 @@ export function useChatState(userId: string | null | undefined) {
     const [userSessions, setUserSessions] = useState<Session[]>([]);
     const [currentChatSession, setCurrentChatSession] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchChatSession = async (userId: string) => {
@@ -166,6 +167,28 @@ export function useChatState(userId: string | null | undefined) {
             const response = await sendMessage(userId, currentChatSession, prompt);
             const { general_response, restaurants } = response["aiResponse"];
 
+            if (!currentConversation) {
+                if (!userId) {
+                    return;
+                }
+
+                const response = await fetchUserSessions(userId);
+
+                if (!response) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data: SessionData[] = response["sessions"];
+                let sessions: Session[] = [];
+
+                sessions = data.map((item) => ({
+                    id: item.session_id,
+                    conversation_preview: item.conversation_preview,
+                    last_updated: item.last_updated,
+                }));
+                setUserSessions(sessions);
+            }
+
             setCurrentConversation((prevConversation) => ({
                 id: prevConversation?.id || currentChatSession,
                 title: prevConversation?.title || "New Conversation",
@@ -184,6 +207,7 @@ export function useChatState(userId: string | null | undefined) {
     const startNewConversation = async () => {
         setCurrentConversation(null);
         setIsFirstInput(true);
+        setSelectedSessionId(null);
 
         if (!userId) {
             console.error("Invalid user ID");
@@ -214,6 +238,8 @@ export function useChatState(userId: string | null | undefined) {
         userSessions,
         currentChatSession,
         isLoading,
+        selectedSessionId,
+        setSelectedSessionId,
         handleSubmit,
         startNewConversation,
         toggleSidebar,
