@@ -1,20 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import middleware from "../../middleware";
+import middleware from "../../../middleware";
 import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
 import { RequestBody } from "@/datatypes/dataTypes";
 
 export async function POST (req: NextRequest): Promise<Response> {
-
-  // Rate Limit check
-  const success = await middleware(req);
-  if (!success) {
-    return NextResponse.json(
-      { error: "Rate limit exceeded. Please try again after a cooldown." },
-      { status: 429 }
-    );
-  }
-
   // POST request check
   if (req.method !== "POST") {
     return NextResponse.json(
