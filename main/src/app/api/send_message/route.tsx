@@ -6,7 +6,6 @@ import { Pinecone } from "@pinecone-database/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
 import Conversation from "@/models/Conversation";
-import middleware from "../../../middleware";
 import { RequestBody, AIMessageContent, Message } from "@/datatypes/dataTypes";
 import { chain } from "@/utils/langchainUtils";
 import { upsertConversationMessage } from "@/utils/dbUtils";

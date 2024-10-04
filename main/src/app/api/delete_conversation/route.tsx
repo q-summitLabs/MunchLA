@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import middleware from "../../../middleware";
 import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
 import { RequestBody } from "@/datatypes/dataTypes";

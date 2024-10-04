@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
-import middleware from "../../../middleware";
 import { Message, Session, SessionsDataToReturn, UserDocument } from "@/datatypes/dataTypes";
 
 export async function GET(req: NextRequest): Promise<Response> {
