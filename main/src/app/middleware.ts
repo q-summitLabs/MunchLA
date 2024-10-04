@@ -9,9 +9,8 @@ const ratelimit = new Ratelimit({
 
 export default async function middleware(request: NextRequest) {
     const ip = request.ip ?? "127.0.0.1";
-    const { success, pending, limit, reset, remaining } = await ratelimit.limit(
-        ip
-    );
-    console.log(pending, limit, reset, remaining);
+
+    const { success } = await ratelimit.limit(ip);    
+
     return success;
 }
