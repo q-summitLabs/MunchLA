@@ -18,10 +18,8 @@ const restaurantSchema = z.object({
     .array(
       z.object({
         name: z.string().describe("The name of the restaurant"),
-        address: z.string().describe("The address of the restaurant"),
-        rating: z.number().describe("The rating of the restaurant"),
-        price: z.string().describe("The price range of the restaurant"),
-        summary: z.string().describe("A summary of reviews for the restaurant"),
+        summary_of_restaurant: z.string().describe("A summary of the restaurant"),
+        summary_of_reviews: z.string().describe("A summary of the reviews"),
       })
     )
     .describe("An array of restaurant objects with detailed information"),

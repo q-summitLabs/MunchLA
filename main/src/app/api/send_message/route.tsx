@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { RunnableConfig, RunnableWithMessageHistory } from "@langchain/core/runnables";
+import {
+  RunnableConfig,
+  RunnableWithMessageHistory,
+} from "@langchain/core/runnables";
 import { ChatMessageHistory } from "@langchain/community/stores/message/in_memory";
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
 import { Pinecone } from "@pinecone-database/pinecone";
@@ -12,7 +15,6 @@ import { chain } from "@/utils/langchainUtils";
 import { upsertConversationMessage } from "@/utils/dbUtils";
 
 export async function POST(req: NextRequest): Promise<Response> {
-
   // Rate Limit check
   const success = await middleware(req);
   if (!success) {
@@ -46,7 +48,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       new OpenAIEmbeddings({ modelName: "text-embedding-3-small" }),
       { pineconeIndex }
     );
-    const results = await vectorStore.similaritySearch(message, 8);
+    const results = await vectorStore.similaritySearch(message, 5);
 
     // Insert formatted restaurant data into MongoDB
     const combinedContent = results
