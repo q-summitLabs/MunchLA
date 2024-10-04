@@ -201,24 +201,13 @@ export default function ChatArea({
                   </div>
                   {message.restaurants && (
                     <div className="mt-3 space-y-3">
-                      <AnimatePresence>
-                        {message.restaurants.map(
-                          (restaurant, restaurantIndex) => (
-                            <motion.div
-                              key={restaurantIndex}
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -20 }}
-                              transition={{
-                                duration: 0.3,
-                                delay: restaurantIndex * 0.1,
-                              }}
-                            >
-                              <RestaurantCard restaurant={restaurant} />
-                            </motion.div>
-                          )
-                        )}
-                      </AnimatePresence>
+                      <div>
+                        {message.restaurants.map((restaurant, restaurantIndex) => (
+                          <div key={restaurantIndex}>
+                            <RestaurantCard restaurant={restaurant} />
+                          </div>
+                        ))}
+                        </div>
                     </div>
                   )}
                 </motion.div>

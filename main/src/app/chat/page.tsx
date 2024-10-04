@@ -19,6 +19,8 @@ export default function MunchLAChatbot() {
     isSidebarExpanded,
     userSessions,
     isLoading,
+    selectedSessionId,
+    setSelectedSessionId,
     handleSubmit,
     startNewConversation,
     toggleSidebar,
@@ -50,6 +52,8 @@ export default function MunchLAChatbot() {
         handleRemoveSession={handleRemoveSession}
         toggleTheme={toggleTheme}
         isDarkMode={isDarkMode}
+        selectedSessionId={selectedSessionId}
+        setSelectedSessionId={setSelectedSessionId}
       />
       <div className="flex-1 flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-200">
         <Header loginInfo={loginInfo} />

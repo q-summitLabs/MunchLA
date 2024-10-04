@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -27,7 +26,9 @@ type SidebarProps = {
   handleSessionClick: (sessionId: string) => void;
   handleRemoveSession: (sessionId: string) => void;
   toggleTheme: () => void;
+  setSelectedSessionId: (sessionId: string | null) => void; 
   isDarkMode: boolean;
+  selectedSessionId: string | null;
 };
 
 export default function Sidebar({
@@ -38,11 +39,10 @@ export default function Sidebar({
   handleSessionClick,
   handleRemoveSession,
   toggleTheme,
+  setSelectedSessionId,
   isDarkMode,
+  selectedSessionId,
 }: SidebarProps) {
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
-    null
-  );
 
   const handleSessionSelect = (sessionId: string) => {
     setSelectedSessionId(sessionId);
