@@ -5,6 +5,8 @@ import Conversation from "@/models/Conversation";
 import { RequestBody } from "@/datatypes/dataTypes";
 
 export async function POST (req: NextRequest): Promise<Response> {
+
+  // Rate Limit check
   const success = await middleware(req);
   if (!success) {
     return NextResponse.json(
@@ -13,6 +15,7 @@ export async function POST (req: NextRequest): Promise<Response> {
     );
   }
 
+  // POST request check
   if (req.method !== "POST") {
     return NextResponse.json(
       { error: "Only POST requests are allowed" },

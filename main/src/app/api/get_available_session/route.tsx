@@ -5,11 +5,21 @@ import middleware from "../../middleware";
 import { UserDocument } from "@/datatypes/dataTypes";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+
+  // Rate limit check
   const success = await middleware(req);
   if (!success) {
     return NextResponse.json(
       { error: "Rate limit exceeded. Please try again after a cooldown." },
       { status: 429 }
+    );
+  }
+
+  // GET request check
+  if (req.method !== "GET") {
+    return NextResponse.json(
+      { error: "Only POST requests are allowed" },
+      { status: 405 }
     );
   }
   try {

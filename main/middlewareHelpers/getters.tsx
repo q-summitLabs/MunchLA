@@ -40,8 +40,6 @@ export async function fetchNextAvailableChatSession(
     // Parse the JSON response
     const data = await response.json();
 
-    console.log("data", data);
-
     // Return the sessions data
     return data["next_session_id"];
   } catch (error) {

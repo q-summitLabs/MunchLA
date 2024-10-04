@@ -5,6 +5,8 @@ import middleware from "../../middleware";
 import { Message, Session, SessionsDataToReturn, UserDocument } from "@/datatypes/dataTypes";
 
 export async function GET(req: NextRequest): Promise<Response> {
+
+  // Rate limit check
   const success = await middleware(req);
   if (!success) {
     return NextResponse.json(
@@ -12,6 +14,15 @@ export async function GET(req: NextRequest): Promise<Response> {
       { status: 429 }
     );
   }
+
+  // GET request check
+  if (req.method !== "GET") {
+    return NextResponse.json(
+      { error: "Only POST requests are allowed" },
+      { status: 405 }
+    );
+  }
+
   try {
     // Get the URL and search parameters
     const { searchParams } = new URL(req.url);

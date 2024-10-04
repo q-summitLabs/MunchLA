@@ -1,117 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ChatOpenAI } from "@langchain/openai";
-import {
-  ChatPromptTemplate,
-  MessagesPlaceholder,
-} from "@langchain/core/prompts";
-import {
-  SystemMessagePromptTemplate,
-  HumanMessagePromptTemplate,
-} from "@langchain/core/prompts";
-import {
-  RunnableConfig,
-  RunnableWithMessageHistory,
-} from "@langchain/core/runnables";
+import { RunnableConfig, RunnableWithMessageHistory } from "@langchain/core/runnables";
 import { ChatMessageHistory } from "@langchain/community/stores/message/in_memory";
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
-import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
-import { JsonOutputFunctionsParser } from "langchain/output_parsers";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
-import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
 import middleware from "../../middleware";
 import { RequestBody, AIMessageContent, Message } from "@/datatypes/dataTypes";
-
-// Define the Zod schema for the structured output
-const restaurantSchema = z.object({
-  general_response: z
-    .string()
-    .describe("A general response from the bot to the user"),
-  restaurants: z
-    .array(
-      z.object({
-        name: z.string().describe("The name of the restaurant"),
-        address: z.string().describe("The address of the restaurant"),
-        rating: z.number().describe("The rating of the restaurant"),
-        price: z.string().describe("The price range of the restaurant"),
-        summary: z.string().describe("A summary of reviews for the restaurant"),
-      })
-    )
-    .describe("An array of restaurant objects with detailed information"),
-});
-
-// Set up your model and prompt
-const model = new ChatOpenAI({
-  openAIApiKey: process.env.OPENAI_API_KEY,
-  modelName: "gpt-4o-mini",
-});
-
-// Bind the model with function calling
-const functionCallingModel = model.bind({
-  functions: [
-    {
-      name: "output_formatter",
-      description: "Format output to structured JSON",
-      parameters: zodToJsonSchema(restaurantSchema),
-    },
-  ],
-  function_call: { name: "output_formatter" },
-});
-
-const prompt = new ChatPromptTemplate({
-  promptMessages: [
-    SystemMessagePromptTemplate.fromTemplate(
-      `You are a friendly and knowledgeable guide specializing in restaurants in Los Angeles. Your main role is to assist users 
-      by answering questions about restaurants and food in the area. Use the restaurant information from the conversation history 
-      as your primary source for responses. 
-
-      If the history doesn't provide relevant information, feel free to engage in normal conversation and answer questions 
-      related to food and dining in Los Angeles using your expertise. Always aim to make the conversation pleasant and informative. 
-      Avoid discussing topics unrelated to food and restaurants, but remember to maintain a friendly and engaging demeanor as a 
-      conversational partner.`
-    ),
-    new MessagesPlaceholder("history"),
-    HumanMessagePromptTemplate.fromTemplate("{inputText}"),
-  ],
-  inputVariables: ["inputText", "history"],
-});
-
-const outputParser = new JsonOutputFunctionsParser();
-const chain = prompt.pipe(functionCallingModel).pipe(outputParser);
-
-async function upsertConversationMessage(
-  user_id: string,
-  session_id: string,
-  newMessage: Message
-) {
-  const currentTime = new Date().toISOString();
-
-  try {
-    // Connect to MongoDB
-    await dbConnect();
-
-    // Update or create the user's document and set the last_updated field
-    await Conversation.updateOne(
-      { _id: user_id },
-      {
-        $set: {
-          [`sessions.${session_id}.last_updated`]: currentTime, // Set last_updated to the current time
-        },
-        $push: { [`sessions.${session_id}.messages`]: newMessage },
-      },
-      { upsert: true }
-    );
-
-    console.log("Message inserted or updated successfully");
-  } catch (error) {
-    console.error("Error inserting or updating message:", error);
-  }
-}
+import { chain } from "@/utils/langchainUtils";
+import { upsertConversationMessage } from "@/utils/dbUtils";
 
 export async function POST(req: NextRequest): Promise<Response> {
+
+  // Rate Limit check
   const success = await middleware(req);
   if (!success) {
     return NextResponse.json(
@@ -120,6 +22,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     );
   }
 
+  // POST request check
   if (req.method !== "POST") {
     return NextResponse.json(
       { error: "Only POST requests are allowed" },
