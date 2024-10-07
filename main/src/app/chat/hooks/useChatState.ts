@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
     fetchUserSessions,
     fetchNextAvailableChatSession,
@@ -144,20 +144,30 @@ export function useChatState(userId: string | null | undefined) {
         }
     };
 
+    const appendMessage = useCallback((message: Message) => {
+        setCurrentConversation((prevConversation) => {
+            if (!prevConversation) {
+                return {
+                    id: currentChatSession || '',
+                    title: "New Conversation",
+                    messages: [message],
+                };
+            }
+            return {
+                ...prevConversation,
+                messages: [...prevConversation.messages, message],
+            };
+        });
+    }, [currentChatSession]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!prompt.trim() || !userId || !currentChatSession) return;
 
-        setCurrentConversation((prevConversation) => ({
-            id: prevConversation?.id || currentChatSession,
-            title: prevConversation?.title || "New Conversation",
-            messages: [
-                ...(prevConversation?.messages || []),
-                { text: prompt, isBot: false },
-            ],
-        }));
+        const userMessage: Message = { text: prompt, isBot: false };
+        
+        appendMessage(userMessage);
 
         setIsLoading(true);
         setPrompt("");
@@ -189,16 +199,13 @@ export function useChatState(userId: string | null | undefined) {
                 setUserSessions(sessions);
             }
 
-            setCurrentConversation((prevConversation) => ({
-                id: prevConversation?.id || currentChatSession,
-                title: prevConversation?.title || "New Conversation",
-                messages: [
-                    ...(prevConversation?.messages || []),
-                    { text: general_response, isBot: true, restaurants: restaurants },
-                ],
-            }));
+            const botMessage: Message = { text: general_response, isBot: true, restaurants };
+            
+            // Append the bot's response
+            appendMessage(botMessage);
         } catch (error) {
             console.error("Error sending message:", error);
+            // Optionally, you can add an error message to the conversation here
         } finally {
             setIsLoading(false);
         }
