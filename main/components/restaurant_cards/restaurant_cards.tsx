@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronUp, Star, MapPin, DollarSign, Clock, Globe, ExternalLink } from 'lucide-react'
+import { ChevronDown, ChevronUp, Star, MapPin, DollarSign, Clock, Globe } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageProps, Restaurant } from '@/datatypes/dataTypes'
 
