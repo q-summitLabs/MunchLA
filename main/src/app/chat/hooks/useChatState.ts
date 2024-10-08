@@ -175,7 +175,7 @@ export function useChatState(userId: string | null | undefined) {
 
         try {
             const response = await sendMessage(userId, currentChatSession, prompt);
-            const { general_response, restaurants } = response["aiResponse"];
+            const { general_response, restaurants } = response["combinedResponse"];
 
             if (!currentConversation) {
                 if (!userId) {

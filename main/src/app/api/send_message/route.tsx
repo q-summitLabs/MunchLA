@@ -39,7 +39,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       { pineconeIndex }
     );
     const results = await vectorStore.similaritySearch(message, 3);
-
+    
     // Insert formatted restaurant data into MongoDB
     const combinedContent = results
       .map((result) => JSON.stringify(result, null, 2))
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
     const aiMessage: Message = {
       message_type: "ai_message",
-      content: aiResponse,
+      content: combinedResponse,
     };
     await upsertConversationMessage(user_id, session_id, aiMessage);
 

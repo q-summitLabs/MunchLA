@@ -10,11 +10,16 @@ export type MessageData = {
 
 export type Restaurant = {
     name: string;
+    place_id: string;
     address: string;
     rating: number;
-    price: string;
-    summary: string;
-};
+    price_level: string;
+    summary_of_restaurant: string;
+    summary_of_reviews: string;
+    google_maps_url: string;
+    opening_hours: string;
+    restaurant_website: string;
+}
 
 export type Message = {
     text: string;
