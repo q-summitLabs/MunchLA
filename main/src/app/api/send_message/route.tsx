@@ -48,12 +48,17 @@ export async function POST(req: NextRequest): Promise<Response> {
       new OpenAIEmbeddings({ modelName: "text-embedding-3-small" }),
       { pineconeIndex }
     );
-    const results = await vectorStore.similaritySearch(message, 5);
+    const results = await vectorStore.similaritySearch(message, 3);
 
     // Insert formatted restaurant data into MongoDB
     const combinedContent = results
       .map((result) => JSON.stringify(result, null, 2))
       .join("\n\n");
+
+    // Process results to get metadata
+    const metadata = results.map((result) => ({
+      metadata: result.metadata,
+    }));
 
     const newMessage: Message = {
       message_type: "restaurant_data",
@@ -76,6 +81,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     // Create a new message history instance for the current session
     const messageHistory = new ChatMessageHistory();
 
+    // Going through the database messages and filling it into the chat
     for (const dbMessage of dbMessages) {
       if (dbMessage.message_type === "human_message_no_prompt") {
         await messageHistory.addMessage(
@@ -104,6 +110,19 @@ export async function POST(req: NextRequest): Promise<Response> {
       config
     )) as AIMessageContent;
 
+    const combinedResponse = {
+      general_response: aiResponse.general_response,
+      restaurants: aiResponse.restaurants.map((restaurant) => {
+        const matchingMetadata = metadata.find(
+          (item) => item.metadata.place_id === restaurant.place_id
+        );
+        return matchingMetadata
+          ? { ...restaurant, ...matchingMetadata.metadata }
+          : restaurant;
+      }),
+    };
+
+    // Adding NEW conversation messages into database (both human and AI)
     const humanMessage: Message = {
       message_type: "human_message_no_prompt",
       content: message,
@@ -116,7 +135,8 @@ export async function POST(req: NextRequest): Promise<Response> {
     };
     await upsertConversationMessage(user_id, session_id, aiMessage);
 
-    return NextResponse.json({ aiResponse }, { status: 200 });
+    // Return JSON response (AI)
+    return NextResponse.json({ combinedResponse }, { status: 200 });
   } catch (error) {
     console.error("Error handling message data:", error);
     return NextResponse.json(

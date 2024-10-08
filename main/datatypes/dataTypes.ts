@@ -4,20 +4,21 @@ export type RequestBody = {
     session_id: string;
     message: string;
 }
-  
+
 export type Restaurant = {
     name: string;
+    place_id: string;
     address: string;
     rating: number;
     price: string;
     summary: string;
 }
-  
+
 export type AIMessageContent = {
     general_response: string;
     restaurants: Restaurant[];
 }
-  
+
 export type Message = {
     message_type: string;
     content: string | AIMessageContent;
@@ -40,7 +41,7 @@ export type SessionsDataToReturn = {
 
 export type UserDocument = {
     _id: string;
-    sessions: Sessions; 
+    sessions: Sessions;
 }
 
 
