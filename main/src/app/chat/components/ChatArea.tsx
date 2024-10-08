@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Conversation } from "../types";
+import { Conversation, Message } from "../types";
 import { Session } from "next-auth";
 import { RestaurantCard } from "@/components/restaurant_cards/restaurant_cards";
 import SuggestionCard from "./SuggestionCard";
@@ -175,42 +175,7 @@ export default function ChatArea({
           <div className="space-y-4">
             <AnimatePresence>
               {currentConversation?.messages?.map((message, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                >
-                  <div
-                    className={`flex ${
-                      message.isBot ? "justify-start" : "justify-end"
-                    }`}
-                  >
-                    <div
-                      className={`inline-block p-2 rounded-lg max-w-[70%] text-sm ${
-                        message.isBot
-                          ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
-                          : "bg-purple-500 text-white"
-                      }`}
-                    >
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {message.text}
-                      </ReactMarkdown>
-                    </div>
-                  </div>
-                  {message.restaurants && (
-                    <div className="mt-3 space-y-3">
-                      <div>
-                        {message.restaurants.map((restaurant, restaurantIndex) => (
-                          <div key={restaurantIndex}>
-                            <RestaurantCard restaurant={restaurant} />
-                          </div>
-                        ))}
-                        </div>
-                    </div>
-                  )}
-                </motion.div>
+                <MessageItem key={index} message={message} />
               ))}
             </AnimatePresence>
             {isLoading && (
@@ -222,5 +187,45 @@ export default function ChatArea({
         )}
       </div>
     </main>
+  );
+}
+
+function MessageItem({ message }: { message: Message }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}>
+        <div
+          className={`inline-block p-2 rounded-lg max-w-[70%] text-sm ${
+            message.isBot
+              ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
+              : "bg-purple-500 text-white"
+          }` }
+        >
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.text}</ReactMarkdown>
+        </div>
+      </div>
+      {message.restaurants && (
+        <div className="mt-3 space-y-3">
+          <AnimatePresence>
+            {message.restaurants.map((restaurant, restaurantIndex) => (
+              <motion.div
+                key={restaurantIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, delay: restaurantIndex * 0.1 }}
+              >
+                <RestaurantCard restaurant={restaurant} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
+    </motion.div>
   );
 }

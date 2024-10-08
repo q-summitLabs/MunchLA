@@ -9,21 +9,11 @@ import { Pinecone } from "@pinecone-database/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
 import Conversation from "@/models/Conversation";
-import middleware from "../../middleware";
 import { RequestBody, AIMessageContent, Message } from "@/datatypes/dataTypes";
 import { chain } from "@/utils/langchainUtils";
 import { upsertConversationMessage } from "@/utils/dbUtils";
 
 export async function POST(req: NextRequest): Promise<Response> {
-  // Rate Limit check
-  const success = await middleware(req);
-  if (!success) {
-    return NextResponse.json(
-      { error: "Rate limit exceeded. Please try again after a cooldown." },
-      { status: 429 }
-    );
-  }
-
   // POST request check
   if (req.method !== "POST") {
     return NextResponse.json(
