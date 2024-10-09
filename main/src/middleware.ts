@@ -6,7 +6,7 @@ import { kv } from '@vercel/kv';
 
 const ratelimit = new Ratelimit({
     redis: kv,
-    limiter: Ratelimit.slidingWindow(50, '100 s'),
+    limiter: Ratelimit.slidingWindow(500, '100 s'),
 });
 
 const secret = process.env.NEXTAUTH_SECRET;
