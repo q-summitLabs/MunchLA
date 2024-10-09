@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Conversation, Message } from "../types";
 import { Session } from "next-auth";
-import { RestaurantCard } from "@/components/restaurant_cards/restaurant_cards";
+import RestaurantCard from "./RestaurantCard";
 import SuggestionCard from "./SuggestionCard";
 import "../styles/custom-scrollbar.css";
 import "../styles/frying-pan-animation.css";
@@ -198,15 +198,19 @@ function MessageItem({ message }: { message: Message }) {
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
     >
-      <div className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}>
+      <div
+        className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}
+      >
         <div
           className={`inline-block p-2 rounded-lg max-w-[70%] text-sm ${
             message.isBot
               ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
               : "bg-purple-500 text-white"
-          }` }
+          }`}
         >
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.text}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {message.text}
+          </ReactMarkdown>
         </div>
       </div>
       {message.restaurants && (
