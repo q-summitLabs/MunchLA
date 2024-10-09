@@ -7,7 +7,7 @@ import RestaurantCard from "./RestaurantCard";
 import SuggestionCard from "./SuggestionCard";
 import "../styles/custom-scrollbar.css";
 import "../styles/frying-pan-animation.css";
-
+// no animation
 type ChatAreaProps = {
   isFirstInput: boolean;
   currentConversation: Conversation | null;
