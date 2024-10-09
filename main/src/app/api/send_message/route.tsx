@@ -72,8 +72,11 @@ export async function POST(req: NextRequest): Promise<Response> {
     // Create a new message history instance for the current session
     const messageHistory = new ChatMessageHistory();
 
-    // Going through the database messages and filling it into the chat
-    for (const dbMessage of dbMessages) {
+    // Limit to the most recent 5 messages
+    const recentMessages = dbMessages.slice(-5); // Get the last 5 messages
+
+    // Going through the recent messages and filling it into the chat
+    for (const dbMessage of recentMessages) {
       if (dbMessage.message_type === "human_message_no_prompt") {
         await messageHistory.addMessage(
           new HumanMessage(dbMessage.content as string)
@@ -88,9 +91,9 @@ export async function POST(req: NextRequest): Promise<Response> {
       }
     }
 
-    const restaurantInfo = results
-  .map(result => `Restaurant Name: ${result.metadata.name}, Place ID: ${result.metadata.place_id}, Summary: ${result.metadata.summary}`)
-  .join("\n");
+  const restaurantInfo = results
+    .map(result => `Restaurant Name: ${result.metadata.name}, Place ID: ${result.metadata.place_id}, Summary: ${result.metadata.summary}`)
+    .join("\n");
 
     const withHistory = new RunnableWithMessageHistory({
       runnable: chain,
