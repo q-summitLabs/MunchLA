@@ -55,6 +55,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       content: combinedContent,
     };
 
+    
     // Insert the combined message into MongoDB
     await upsertConversationMessage(user_id, session_id, newMessage);
 
