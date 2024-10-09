@@ -87,6 +87,10 @@ export async function POST(req: NextRequest): Promise<Response> {
       }
     }
 
+    const restaurantInfo = results
+  .map(result => `Restaurant Name: ${result.metadata.name}, Place ID: ${result.metadata.place_id}, Summary: ${result.metadata.summary}`)
+  .join("\n");
+
     const withHistory = new RunnableWithMessageHistory({
       runnable: chain,
       getMessageHistory: () => messageHistory,
@@ -96,7 +100,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
     const config: RunnableConfig = { configurable: { sessionId: session_id } };
     const aiResponse = (await withHistory.invoke(
-      { inputText: message, history: messageHistory },
+      { inputText: message, history: messageHistory, restaurantInfo: restaurantInfo },
       config
     )) as AIMessageContent;
 
