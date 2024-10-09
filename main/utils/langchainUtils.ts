@@ -46,19 +46,25 @@ const functionCallingModel = model.bind({
 // Define the prompt template
 const prompt = new ChatPromptTemplate({
   promptMessages: [
+    new MessagesPlaceholder("history"),
     SystemMessagePromptTemplate.fromTemplate(
       `You are a friendly and knowledgeable guide specializing in restaurants in Los Angeles. Your main role is to assist users 
       by answering questions about restaurants and food in the area. Use the history to answer questions.
-      If the history doesn't provide relevant information, feel free to engage in normal conversation and answer questions 
-      related to food and dining in Los Angeles using your expertise. Always aim to make the conversation pleasant and informative. 
-      Avoid discussing topics unrelated to food and restaurants, but remember to maintain a friendly and engaging demeanor as a 
-      conversational partner.`
+      
+      If the history doesn't provide relevant information, engage in normal conversation and answer questions related to food 
+      and dining in Los Angeles using your expertise. If provided, refer to restaurant information below to offer more detailed responses.
+
+      Below are restaurants with their information:
+      {restaurantInfo}
+
+      Always aim to make the conversation pleasant and informative. Avoid discussing topics unrelated to food and restaurants, but 
+      remember to maintain a friendly and engaging demeanor as a conversational partner.`
     ),
-    new MessagesPlaceholder("history"),
     HumanMessagePromptTemplate.fromTemplate("{inputText}"),
   ],
-  inputVariables: ["inputText", "history"],
+  inputVariables: ["inputText", "history", "restaurantInfo"],
 });
+
 
 // Set up the output parser to handle structured output
 const outputParser = new JsonOutputFunctionsParser();
