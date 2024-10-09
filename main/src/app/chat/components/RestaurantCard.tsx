@@ -7,7 +7,6 @@ import {
   Star,
   MapPin,
   DollarSign,
-  Clock,
   Globe,
   ChevronDown,
   ChevronUp,
@@ -16,10 +15,52 @@ import {
 import Image from "next/image";
 import { Restaurant } from "@/datatypes/dataTypes";
 
+// Price level mapping with tighter spacing
+const priceLevelMap = {
+  PRICE_LEVEL_FREE: {
+    label: "Free",
+    icon: <DollarSign className="w-3 h-3 opacity-50" />,
+  },
+  PRICE_LEVEL_INEXPENSIVE: {
+    label: "Inexpensive",
+    icon: <DollarSign className="w-3 h-3" />,
+  },
+  PRICE_LEVEL_MODERATE: {
+    label: "Moderate",
+    icon: (
+      <div className="flex -space-x-1">
+        <DollarSign className="w-3 h-3" />
+        <DollarSign className="w-3 h-3" />
+      </div>
+    ),
+  },
+  PRICE_LEVEL_EXPENSIVE: {
+    label: "Expensive",
+    icon: (
+      <div className="flex -space-x-1">
+        <DollarSign className="w-3 h-3" />
+        <DollarSign className="w-3 h-3" />
+        <DollarSign className="w-3 h-3" />
+      </div>
+    ),
+  },
+  PRICE_LEVEL_VERY_EXPENSIVE: {
+    label: "Very Expensive",
+    icon: (
+      <div className="flex -space-x-1">
+        <DollarSign className="w-3 h-3" />
+        <DollarSign className="w-3 h-3" />
+        <DollarSign className="w-3 h-3" />
+        <DollarSign className="w-3 h-3" />
+      </div>
+    ),
+  },
+};
+
 // Create a cache object outside the component to persist across renders
 const imageCache: { [key: string]: string[] } = {};
 
-export default function RestaurantCard({
+export default function EnhancedRestaurantCard({
   restaurant,
 }: {
   restaurant: Restaurant;
@@ -58,6 +99,10 @@ export default function RestaurantCard({
     fetchImages();
   }, [restaurant.place_id]);
 
+  const priceLevel =
+    priceLevelMap[restaurant.price_level as keyof typeof priceLevelMap] ||
+    priceLevelMap["PRICE_LEVEL_FREE"];
+
   return (
     <Card className="overflow-hidden bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardContent className="p-0">
@@ -87,9 +132,9 @@ export default function RestaurantCard({
                 <Star className="w-4 h-4 mr-1" />
                 {restaurant.rating}
               </Badge>
-              <Badge className="bg-green-500 text-white">
-                <DollarSign className="w-4 h-4 mr-1" />
-                {restaurant.price_level}
+              <Badge className="bg-green-500 text-white flex items-center">
+                {priceLevel.icon}
+                <span className="ml-1 text-xs">{priceLevel.label}</span>
               </Badge>
             </div>
           </div>
