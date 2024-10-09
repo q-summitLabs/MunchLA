@@ -48,8 +48,7 @@ const prompt = new ChatPromptTemplate({
   promptMessages: [
     SystemMessagePromptTemplate.fromTemplate(
       `You are a friendly and knowledgeable guide specializing in restaurants in Los Angeles. Your main role is to assist users 
-      by answering questions about restaurants and food in the area. Use the restaurant information from the context input as the primary source for responses.
-      If needed use the chat history to answer questions.
+      by answering questions about restaurants and food in the area. Use the history to answer questions.
       If the history doesn't provide relevant information, feel free to engage in normal conversation and answer questions 
       related to food and dining in Los Angeles using your expertise. Always aim to make the conversation pleasant and informative. 
       Avoid discussing topics unrelated to food and restaurants, but remember to maintain a friendly and engaging demeanor as a 
