@@ -1,47 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
-
-
-interface Restaurant {
-  name: string;
-  address: string;
-  rating: number;
-  price: string;
-  summary: string;
-}
-
-interface AIMessageContent {
-  general_response: string;
-  restaurants: Restaurant[];
-}
-
-interface Message {
-  message_type: string;
-  content: string | AIMessageContent;
-}
-
-interface Session {
-  last_updated: string;
-  messages: Message[];
-}
-
-interface Sessions {
-  [sessionId: string]: Session;
-}
-
-interface SessionsDataToReturn {
-  session_id: string;
-  conversation_preview: string;
-  last_updated: string;
-}
-
-interface UserDocument {
-  _id: string;
-  sessions: Sessions; 
-}
+import { Message, Session, SessionsDataToReturn, UserDocument } from "@/datatypes/dataTypes";
 
 export async function GET(req: NextRequest): Promise<Response> {
+  // GET request check
+  if (req.method !== "GET") {
+    return NextResponse.json(
+      { error: "Only POST requests are allowed" },
+      { status: 405 }
+    );
+  }
+
   try {
     // Get the URL and search parameters
     const { searchParams } = new URL(req.url);
@@ -60,7 +30,9 @@ export async function GET(req: NextRequest): Promise<Response> {
     await dbConnect();
 
     // Retrieve the user document to get the current sessions using `.lean()`
-    const userDocument = await Conversation.findOne({ _id: user_id }).lean() as UserDocument;
+    const userDocument = (await Conversation.findOne({
+      _id: user_id,
+    }).lean()) as UserDocument;
 
     if (!userDocument || !userDocument.sessions) {
       return NextResponse.json(
@@ -69,33 +41,36 @@ export async function GET(req: NextRequest): Promise<Response> {
       );
     }
 
-
     // Process each session to return the session_id and the general_response as the conversation_preview
     const sessions: SessionsDataToReturn[] = [];
 
-    Object.entries(userDocument.sessions).forEach(([sessionId, sessionData]: [string, Session]) => {
-      // Find the first AI message
-      const aiMessage = sessionData.messages?.find(
-        (msg: Message) => msg.message_type === "ai_message"
-      );
+    Object.entries(userDocument.sessions).forEach(
+      ([sessionId, sessionData]: [string, Session]) => {
+        // Find the first AI message
+        const aiMessage = sessionData.messages?.find(
+          (msg: Message) => msg.message_type === "ai_message"
+        );
 
-      // Check if the content is AIMessageContent and extract the general_response
-      let generalResponse = "No AI messages yet";
-      if (aiMessage && typeof aiMessage.content !== 'string') {
-        generalResponse = aiMessage.content.general_response || "No general response";
+        // Check if the content is AIMessageContent and extract the general_response
+        let generalResponse = "No AI messages yet";
+        if (aiMessage && typeof aiMessage.content !== "string") {
+          generalResponse =
+            aiMessage.content.general_response || "No general response";
+        }
+
+        // Push the session details into the sessions array
+        sessions.push({
+          session_id: sessionId,
+          conversation_preview: generalResponse,
+          last_updated: sessionData.last_updated || new Date().toISOString(),
+        });
       }
-
-      // Push the session details into the sessions array
-      sessions.push({
-        session_id: sessionId,
-        conversation_preview: generalResponse,
-        last_updated: sessionData.last_updated || new Date().toISOString(),
-      });
-    });
+    );
 
     // Sort the sessions by last_updated, newest first
-    sessions.sort((a: SessionsDataToReturn, b: SessionsDataToReturn) =>
-      new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime()
+    sessions.sort(
+      (a: SessionsDataToReturn, b: SessionsDataToReturn) =>
+        new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime()
     );
 
     // Return the list of sessions with their conversation previews

@@ -1,7 +1,15 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/db";
 import User from "@/models/User";
+
+if (
+  !process.env.GOOGLE_CLIENT_ID ||
+  !process.env.GOOGLE_CLIENT_SECRET ||
+  !process.env.NEXTAUTH_SECRET
+) {
+  throw new Error("Missing environment variables for authentication");
+}
 
 const authOptions: AuthOptions = {
   providers: [
@@ -36,7 +44,11 @@ const authOptions: AuthOptions = {
           user.id = dbUser._id.toString();
           return true;
         } catch (error) {
-          console.error("Error during sign in:", error);
+          if (error instanceof Error) {
+            console.error("Error during sign in:", error.message);
+          } else {
+            console.error("Error during sign in:", error);
+          }
           return false;
         }
       }

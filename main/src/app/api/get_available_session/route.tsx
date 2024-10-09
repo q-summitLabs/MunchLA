@@ -1,39 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
-
-interface Restaurant {
-  name: string;
-  address: string;
-  rating: number;
-  price: string;
-  summary: string;
-}
-
-interface AIMessageContent {
-  general_response: string;
-  restaurants: Restaurant[];
-}
-
-interface Message {
-  message_type: string;
-  content: string | AIMessageContent;
-}
-
-interface Session {
-  messages: Message[]; // An array of messages
-}
-
-interface Sessions {
-  [sessionId: string]: Session; // Dynamic keys for session IDs
-}
-
-interface UserDocument {
-  _id: string;
-  sessions: Sessions;
-}
+import { UserDocument } from "@/datatypes/dataTypes";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  // GET request check
+  if (req.method !== "GET") {
+    return NextResponse.json(
+      { error: "Only POST requests are allowed" },
+      { status: 405 }
+    );
+  }
   try {
     // Extract query parameters from the URL
     const { searchParams } = new URL(req.url);
@@ -51,7 +28,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const userDocument = (await Conversation.findOne({
       _id: user_id,
     }).lean()) as UserDocument;
-
 
     // If user doesn't exist or doesn't have any sessions, return session_id as 1
     if (
