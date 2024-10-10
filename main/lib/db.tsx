@@ -24,7 +24,7 @@ async function dbConnect(): Promise<Mongoose> {
       maxPoolSize: 10, // Adjust the pool size as needed
       minPoolSize: 1,
       autoIndex: true,
-      serverSelectionTimeoutMS: 5000, // Adjust the server selection timeout as needed
+      serverSelectionTimeoutMS: 10000, // Adjust the server selection timeout as needed
     };
 
     const uri = MONGODB_URI || "def"; // Provide a default value
