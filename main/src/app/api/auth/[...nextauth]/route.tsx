@@ -6,7 +6,8 @@ import User from "@/models/User";
 if (
   !process.env.GOOGLE_CLIENT_ID ||
   !process.env.GOOGLE_CLIENT_SECRET ||
-  !process.env.NEXTAUTH_SECRET
+  !process.env.NEXTAUTH_SECRET ||
+  !process.env.MONGODB_URI
 ) {
   throw new Error("Missing environment variables for authentication");
 }
@@ -19,6 +20,11 @@ const authOptions: AuthOptions = {
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
+  },
   callbacks: {
     async signIn({ user, account }) {
       if (account && account.provider === "google") {
@@ -44,11 +50,7 @@ const authOptions: AuthOptions = {
           user.id = dbUser._id.toString();
           return true;
         } catch (error) {
-          if (error instanceof Error) {
-            console.error("Error during sign in:", error.message);
-          } else {
-            console.error("Error during sign in:", error);
-          }
+          console.error("Error during sign in:", error);
           return false;
         }
       }
@@ -57,13 +59,18 @@ const authOptions: AuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         if (token.sub) {
-          session.user.id = token.sub;
-          const dbUser = await User.findById(token.sub).select(
-            "createdAt lastLogin"
-          );
-          if (dbUser) {
-            session.user.createdAt = dbUser.createdAt.toISOString();
-            session.user.lastLogin = dbUser.lastLogin.toISOString();
+          session.user.id = token.sub as string;
+          try {
+            await dbConnect();
+            const dbUser = await User.findById(token.sub).select(
+              "createdAt lastLogin"
+            );
+            if (dbUser) {
+              session.user.createdAt = dbUser.createdAt.toISOString();
+              session.user.lastLogin = dbUser.lastLogin.toISOString();
+            }
+          } catch (error) {
+            console.error("Error fetching user session data:", error);
           }
         } else {
           console.warn("Token sub is undefined");
@@ -80,9 +87,6 @@ const authOptions: AuthOptions = {
   },
   pages: {
     signIn: "/login",
-  },
-  session: {
-    strategy: "jwt",
   },
 };
 
