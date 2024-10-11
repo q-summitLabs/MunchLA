@@ -12,12 +12,10 @@ const ratelimit = new Ratelimit({
 const secret = process.env.NEXTAUTH_SECRET;
 
 const protectedRoutes = ['/chat'];
-const publicRoutes = ['/login'];
 
 export default async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // Rate limiting
     const ip = request.ip ?? "127.0.0.1";
     const { success } = await ratelimit.limit(ip);
 
@@ -25,21 +23,18 @@ export default async function middleware(request: NextRequest) {
         return new NextResponse('Too Many Requests', { status: 429 });
     }
 
-    // Authentication check
-    const token = await getToken({ req: request, secret });
-    // Redirect authenticated users from login page to chat
-    if (token && publicRoutes.includes(pathname)) {
-        return NextResponse.redirect(new URL('/chat', request.url));
-    }
+    if (protectedRoutes.includes(pathname)) {
+        const token = await getToken({ req: request, secret });
 
-    // Redirect unauthenticated users from protected routes to login
-    if (!token && protectedRoutes.includes(pathname)) {
-        return NextResponse.redirect(new URL('/login', request.url));
+        if (!token) {
+            const loginUrl = new URL('/login', request.url);
+            return NextResponse.redirect(loginUrl);
+        }
     }
 
     return NextResponse.next();
 }
 
 export const config = {
-    matcher: ['/chat', '/login', '/api/:path*'],
+    matcher: ['/chat', '/api/:path*'],
 };
