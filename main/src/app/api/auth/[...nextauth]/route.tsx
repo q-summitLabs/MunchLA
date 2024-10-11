@@ -90,7 +90,7 @@ const authOptions: AuthOptions = {
   },
   cookies: {
     sessionToken: {
-      name: `next-auth.session-token`,
+      name: `next-auth.session-token-v2`,
       options: {
         httpOnly: true,
         sameSite: "lax",
