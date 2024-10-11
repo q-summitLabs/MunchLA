@@ -9,14 +9,14 @@ import { UtensilsIcon } from "lucide-react";
 
 export default function Component() {
   const [isLoading, setIsLoading] = useState(false);
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
     if (status === "authenticated") {
       router.push("/chat");
     }
-  }, [status, router, session]);
+  }, [status, router]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -24,13 +24,16 @@ export default function Component() {
       await signIn("google", { callbackUrl: "/chat" });
     } catch (error) {
       console.error("Error signing in with Google:", error);
-    } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Reset loading state on error
     }
   };
 
-  if (status === "loading" || status === "authenticated") {
+  if (status === "loading") {
     return <div>Loading...</div>;
+  }
+
+  if (status === "authenticated") {
+    return <div>Redirecting to chat...</div>;
   }
 
   return (
