@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { UtensilsIcon } from "lucide-react";
@@ -12,20 +12,21 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const { status } = useSession();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/chat";
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.push(callbackUrl);
+      router.push("/chat");
     }
-  }, [status, router, callbackUrl]);
+  }, [status, router]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await signIn("google", { callbackUrl, redirect: false });
+      const result = await signIn("google", {
+        callbackUrl: "/chat",
+        redirect: false,
+      });
       if (result?.error) {
         setError(result.error);
         console.error("Sign in error:", result.error);

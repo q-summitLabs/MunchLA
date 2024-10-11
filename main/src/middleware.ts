@@ -43,9 +43,7 @@ export default async function middleware(request: NextRequest) {
         // Redirect unauthenticated users from protected routes to login
         if (!token && protectedRoutes.includes(pathname)) {
             console.log('Middleware: Redirecting unauthenticated user to /login');
-            const loginUrl = new URL('/login', request.url);
-            loginUrl.searchParams.set('callbackUrl', encodeURI(request.url));
-            return NextResponse.redirect(loginUrl);
+            return NextResponse.redirect(new URL('/login', request.url));
         }
     } catch (error) {
         console.error('Error in middleware:', error);
