@@ -10,11 +10,25 @@ import {
   SunIcon,
   MoonIcon,
   MoreVerticalIcon,
+  LogOut,
 } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function LandingPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { data: session, status } = useSession();
+
+  const handleSignOut = () => {
+    signOut({ callbackUrl: "/" });
+  };
 
   useEffect(() => {
     setIsDarkMode(false);
@@ -95,7 +109,7 @@ export default function LandingPage() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [chatPosts.length]);
 
   return (
     <motion.div
@@ -149,13 +163,46 @@ export default function LandingPage() {
                 <MoreVerticalIcon className="h-5 w-5" />
               </Button>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/login">
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full">
-                  Sign in
-                </Button>
-              </Link>
-            </motion.div>
+            {status === "authenticated" ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="focus:outline-none focus:ring-0" // Added here
+                  >
+                    <Avatar className="cursor-pointer ring-2 ring-gray-400">
+                      <AvatarImage
+                        src={session?.user?.image ?? ""}
+                        alt={session?.user?.name ?? "User"}
+                      />
+                      <AvatarFallback>
+                        {session?.user?.name?.[0] ?? "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </motion.div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 p-1" align="end">
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <div className="flex items-center w-full">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign out</span>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link href="/login">
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full">
+                    Sign in
+                  </Button>
+                </Link>
+              </motion.div>
+            )}
           </nav>
         </motion.header>
 
@@ -187,21 +234,28 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
               >
-                Chat to start discovering, planning, and exploring LA&apos;s vibrant
-                food scene with AI
+                Chat to start discovering, planning, and exploring LA&apos;s
+                vibrant food scene with AI
               </motion.p>
               <motion.div
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.8 }}
               >
-                <Link href="/login">
-                  <Button className="bg-purple-600 hover:bg-purple-700 text-white text-base px-6 py-2 rounded-full">
-                    Sign in
-                  </Button>
-                </Link>
+                {status === "authenticated" ? (
+                  <Link href="/chat">
+                    <Button className="bg-purple-600 hover:bg-purple-700 text-white text-base px-6 py-2 rounded-full">
+                      Start chatting
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/login">
+                    <Button className="bg-purple-600 hover:bg-purple-700 text-white text-base px-6 py-2 rounded-full">
+                      Sign in
+                    </Button>
+                  </Link>
+                )}
               </motion.div>
             </motion.div>
             <motion.div
