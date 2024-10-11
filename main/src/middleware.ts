@@ -32,16 +32,24 @@ export default async function middleware(request: NextRequest) {
 
         if (token) {
             console.log('Token contents:', JSON.stringify(token, null, 2));
+        } else {
+            console.log('Token is null. Checking for session cookie...');
+            const sessionCookie = request.cookies.get('next-auth.session-token');
+            if (sessionCookie) {
+                console.log('Session cookie found, but token is null. This might indicate a configuration issue.');
+            } else {
+                console.log('No session cookie found.');
+            }
         }
 
         // Redirect authenticated users from login page to chat
-        if (token && publicRoutes.includes(pathname)) {
+        if ((token || request.cookies.get('next-auth.session-token')) && publicRoutes.includes(pathname)) {
             console.log('Middleware: Redirecting authenticated user to /chat');
             return NextResponse.redirect(new URL('/chat', request.url));
         }
 
         // Redirect unauthenticated users from protected routes to login
-        if (!token && protectedRoutes.includes(pathname)) {
+        if (!token && !request.cookies.get('next-auth.session-token') && protectedRoutes.includes(pathname)) {
             console.log('Middleware: Redirecting unauthenticated user to /login');
             return NextResponse.redirect(new URL('/login', request.url));
         }
