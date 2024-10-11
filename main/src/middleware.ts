@@ -43,10 +43,14 @@ function clearIncompatibleCookies(request: NextRequest, response: NextResponse) 
 }
 
 export default async function middleware(request: NextRequest) {
+    const currentVersion = process.env.APP_VERSION;
+    const previousVersion = request.cookies.get('previousVersion');
+    if (!previousVersion || previousVersion.value !== currentVersion) {
+        request.cookies.delete('__Secure-next-auth.session-token');
+        request.cookies.set('previousVersion', currentVersion || '');
+    }
     const response = NextResponse.next();
 
-    // Clear incompatible cookies
-    clearIncompatibleCookies(request, response);
 
     const { pathname } = request.nextUrl;
 
