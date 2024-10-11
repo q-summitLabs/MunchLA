@@ -15,38 +15,42 @@ const protectedRoutes = ['/chat'];
 const publicRoutes = ['/login'];
 
 // New function to clear incompatible cookies
-function clearIncompatibleCookies(request: NextRequest, response: NextResponse) {
-    const currentVersion = process.env.APP_VERSION || '1.0.0';
-    const storedVersion = request.cookies.get('app_version');
+// function clearIncompatibleCookies(request: NextRequest, response: NextResponse) {
+//     const currentVersion = process.env.APP_VERSION || '1.0.0';
+//     const storedVersion = request.cookies.get('app_version');
 
-    if (storedVersion && storedVersion.value !== currentVersion) {
-        console.log(`Clearing incompatible cookies. Stored version: ${storedVersion}, Current version: ${currentVersion}`);
+//     if (storedVersion && storedVersion.value !== currentVersion) {
+//         console.log(`Clearing incompatible cookies. Stored version: ${storedVersion}, Current version: ${currentVersion}`);
 
-        // List of cookies to preserve (add any other essential cookies here)
-        const preserveCookies = ['next-auth.session-token-v2', 'app_version'];
+//         // List of cookies to preserve (add any other essential cookies here)
+//         const preserveCookies = ['next-auth.session-token-v2', 'app_version'];
 
-        // Clear all cookies except the ones in preserveCookies
-        request.cookies.getAll().forEach(cookie => {
-            if (!preserveCookies.includes(cookie.name)) {
-                response.cookies.delete(cookie.name);
-            }
-        });
+//         // Clear all cookies except the ones in preserveCookies
+//         request.cookies.getAll().forEach(cookie => {
+//             if (!preserveCookies.includes(cookie.name)) {
+//                 response.cookies.delete(cookie.name);
+//             }
+//         });
 
-        // Set the new app version cookie
-        response.cookies.set('app_version', currentVersion, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 60 * 60 * 24 * 30 // 30 days
-        });
-    }
-}
+//         // Set the new app version cookie
+//         response.cookies.set('app_version', currentVersion, {
+//             httpOnly: true,
+//             secure: process.env.NODE_ENV === 'production',
+//             sameSite: 'strict',
+//             maxAge: 60 * 60 * 24 * 30 // 30 days
+//         });
+//     }
+// }
 
 export default async function middleware(request: NextRequest) {
+    const currentVersion = process.env.APP_VERSION;
+    const previousVersion = request.cookies.get('previousVersion');
+    if (!previousVersion || previousVersion.value !== currentVersion) {
+        request.cookies.delete('__Secure-next-auth.session-token');
+        request.cookies.set('previousVersion', currentVersion || '');
+    }
     const response = NextResponse.next();
 
-    // Clear incompatible cookies
-    clearIncompatibleCookies(request, response);
 
     const { pathname } = request.nextUrl;
 
