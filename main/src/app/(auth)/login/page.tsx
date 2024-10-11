@@ -1,13 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { UtensilsIcon } from "lucide-react";
 
 export default function Component() {
   const [isLoading, setIsLoading] = useState(false);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/chat");
+    }
+  }, [status, router, session]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -19,6 +28,10 @@ export default function Component() {
       setIsLoading(false);
     }
   };
+
+  if (status === "loading" || status === "authenticated") {
+    return <div>Loading...</div>;
+  }
 
   return (
     <motion.div
