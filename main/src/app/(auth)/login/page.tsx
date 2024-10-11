@@ -10,14 +10,14 @@ import { UtensilsIcon } from "lucide-react";
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if (status === "authenticated" && session) {
       router.push("/chat");
     }
-  }, [status, router]);
+  }, [status, session, router]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
