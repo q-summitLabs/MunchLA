@@ -27,7 +27,6 @@ export default async function middleware(request: NextRequest) {
 
     // Authentication check
     const token = await getToken({ req: request, secret });
-
     // Redirect authenticated users from login page to chat
     if (token && publicRoutes.includes(pathname)) {
         return NextResponse.redirect(new URL('/chat', request.url));
