@@ -21,10 +21,21 @@ export default function Component() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      await signIn("google", { callbackUrl: "/chat" });
+      const result = await signIn("google", {
+        callbackUrl: "/chat",
+        redirect: false,
+      });
+      if (result?.error) {
+        console.error("Sign in error:", result.error);
+        // Handle error (e.g., show error message to user)
+      } else if (result?.url) {
+        router.push(result.url);
+      }
     } catch (error) {
       console.error("Error signing in with Google:", error);
-      setIsLoading(false); // Reset loading state on error
+      // Handle error (e.g., show error message to user)
+    } finally {
+      setIsLoading(false);
     }
   };
 
