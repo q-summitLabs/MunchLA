@@ -57,30 +57,30 @@ const authOptions: AuthOptions = {
       return true;
     },
     async session({ session, token }) {
-      if (session.user) {
-        if (token.sub) {
-          session.user.id = token.sub as string;
-          try {
-            await dbConnect();
-            const dbUser = await User.findById(token.sub).select(
-              "createdAt lastLogin"
-            );
-            if (dbUser) {
-              session.user.createdAt = dbUser.createdAt.toISOString();
-              session.user.lastLogin = dbUser.lastLogin.toISOString();
-            }
-          } catch (error) {
-            console.error("Error fetching user session data:", error);
-          }
-        } else {
-          console.warn("Token sub is undefined");
-        }
+      if (session.user && token) {
+        session.user.id = token.sub as string;
+        session.user.createdAt = token.createdAt as string;
+        session.user.lastLogin = token.lastLogin as string;
       }
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.sub = user.id;
+        if (account && account.provider === "google") {
+          try {
+            await dbConnect();
+            const dbUser = await User.findById(user.id).select(
+              "createdAt lastLogin"
+            );
+            if (dbUser) {
+              token.createdAt = dbUser.createdAt.toISOString();
+              token.lastLogin = dbUser.lastLogin.toISOString();
+            }
+          } catch (error) {
+            console.error("Error fetching user data for JWT:", error);
+          }
+        }
       }
       return token;
     },
@@ -96,7 +96,6 @@ const authOptions: AuthOptions = {
         sameSite: "lax",
         path: "/",
         secure: process.env.NODE_ENV === "production",
-        maxAge: 30 * 24 * 60 * 60, // 30 days
       },
     },
   },

@@ -26,20 +26,29 @@ export default async function middleware(request: NextRequest) {
     }
 
     // Authentication check
-    const token = await getToken({ req: request, secret });
+    try {
+        const token = await getToken({ req: request, secret });
+        console.log(`Middleware: Path: ${pathname}, Token:`, token ? 'exists' : 'null');
 
-    console.log(`Middleware: Path: ${pathname}, Token:`, token ? 'exists' : 'null');
+        if (token) {
+            console.log('Token contents:', JSON.stringify(token, null, 2));
+        }
 
-    // Redirect authenticated users from login page to chat
-    if (token && publicRoutes.includes(pathname)) {
-        console.log('Middleware: Redirecting authenticated user to /chat');
-        return NextResponse.redirect(new URL('/chat', request.url));
-    }
+        // Redirect authenticated users from login page to chat
+        if (token && publicRoutes.includes(pathname)) {
+            console.log('Middleware: Redirecting authenticated user to /chat');
+            return NextResponse.redirect(new URL('/chat', request.url));
+        }
 
-    // Redirect unauthenticated users from protected routes to login
-    if (!token && protectedRoutes.includes(pathname)) {
-        console.log('Middleware: Redirecting unauthenticated user to /login');
-        return NextResponse.redirect(new URL('/login', request.url));
+        // Redirect unauthenticated users from protected routes to login
+        if (!token && protectedRoutes.includes(pathname)) {
+            console.log('Middleware: Redirecting unauthenticated user to /login');
+            return NextResponse.redirect(new URL('/login', request.url));
+        }
+    } catch (error) {
+        console.error('Error in middleware:', error);
+        // In case of an error, allow the request to proceed to the application,
+        // where it can be handled more gracefully
     }
 
     return NextResponse.next();
