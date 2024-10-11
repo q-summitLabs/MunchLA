@@ -2,49 +2,50 @@
 
 import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { UtensilsIcon } from "lucide-react";
 
-export default function Component() {
+export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/chat";
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.push("/chat");
+      router.push(callbackUrl);
     }
-  }, [status, router]);
+  }, [status, router, callbackUrl]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
+    setError(null);
     try {
-      const result = await signIn("google", {
-        callbackUrl: "/chat",
-        redirect: false,
-      });
+      const result = await signIn("google", { callbackUrl, redirect: false });
       if (result?.error) {
+        setError(result.error);
         console.error("Sign in error:", result.error);
-        // Handle error (e.g., show error message to user)
       } else if (result?.url) {
         router.push(result.url);
       }
     } catch (error) {
+      setError("An unexpected error occurred. Please try again.");
       console.error("Error signing in with Google:", error);
-      // Handle error (e.g., show error message to user)
     } finally {
       setIsLoading(false);
     }
   };
 
   if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
-  if (status === "authenticated") {
-    return <div>Redirecting to chat...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -63,6 +64,16 @@ export default function Component() {
           Sign in to start your culinary journey
         </p>
       </div>
+
+      {error && (
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <strong className="font-bold">Error: </strong>
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
 
       <div className="mt-8">
         <Button
