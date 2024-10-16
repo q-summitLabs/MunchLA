@@ -1,127 +1,208 @@
 # Routes
 
-## get_available_sessions
-* Used for when a new chat is created, because it returns the next session that's available for the user
-* Example input body:
+## API Endpoint: Delete Message History
 
-```
+### Description:
+This API endpoint deletes the message history for a specific session belonging to a user.
+
+### Method:
+`POST /api/delete-conversation`
+
+### Input Format (Request Body):
+- `user_id` (string, required): The ID of the user whose session you want to delete.
+- `session_id` (string, required): The ID of the session that you want to delete from the user's conversation history.
+
+#### Example Request Body:
+```json
 {
-    "user_id": "1"
+  "user_id": "kaijones@goatlife.com",
+  "session_id": "1"
 }
 ```
 
-* Return JSON Format:
-
-```
+#### Example Response JSON:
+```json
 {
-    "next_session_id": 4
+  "message": "Message history deleted successfully",
+  "status": 200
 }
 ```
 
-## get_conversation
-* Used for when a user clicks on a specific chat. It will load up the chat
-* Example input body:
+-------------------------------------------------
 
-```
+## API Endpoint: Get Next Available Session ID
+
+### Description:
+This API endpoint retrieves the next available session ID for a given user based on their previous sessions.
+
+### Method:
+`GET /api/get-available-session`
+
+### Input Format (Query Parameters):
+- `user_id` (string, required): The ID of the user for whom the next available session ID is being requested.
+
+#### Example Request URL:
+`GET /api/get-available-session?user_id=kaijones@goatlife.com`
+
+#### Example Response JSON:
+```json
 {
-    "user_id": "1",
-    "session_id": "4"
+  "next_session_id": "2"
 }
 ```
 
-* Return JSON Format:
+-------------------------------------------------
 
-```
+## API Endpoint: Get Conversation
+
+### Description:
+This API endpoint retrieves the conversation history for a specific session of a user. It returns filtered messages that include only human and AI messages.
+
+### Method:
+`GET /api/get-conversation`
+
+### Input Format (Query Parameters):
+- `user_id` (string, required): The ID of the user whose conversation is being fetched.
+- `session_id` (string, required): The ID of the session for which the conversation is requested.
+
+#### Example Request URL:
+`GET /api/get-conversation?user_id=kaijones@goatlife.com&session_id=1`
+
+#### Example Reponse JSON
+```json
 {
-    "conversation": [
-        {
-            "message_type": "human_message_no_prompt",
-            "content": "hi"
-        },
-        {
-            "message_type": "ai_message",
-            "content": {
-                "general_response": "Hello! How can I assist you with finding a restaurant in Los Angeles today?",
-                "restaurants": []
+  "conversation": [
+    {
+      "message_type": "human_message_no_prompt",
+      "content": "Can you find me a good pizza place?"
+    },
+    {
+      "message_type": "ai_message",
+      "content": {
+        "general_response": "Here are some pizza places I found near you.",
+        "restaurants": [
+            {
+                "place_id": "ChIJxxxxxxxxxxxxxx",
+                "summary_of_restaurant": "Restaurant Name is a popular dining establishment known for its delicious and customizable dishes. It features an efficient ordering system, allowing patrons to personalize their dining experience.",
+                "summary_of_reviews": "Reviews highlight the impressive flavors and the overall taste balance, earning Restaurant Name a strong positive sentiment from customers.",
+                "address": "123 Example St, City, State 12345, USA",
+                "google_maps_url": "https://maps.google.com/?cid=xxxxxxxxxxxx",
+                "keywords": "dummy_keyword1, dummy_keyword2, restaurant, food, point_of_interest, establishment",
+                "name": "Restaurant Name",
+                "num_of_reviews": 100,
+                "opening_hours": "Monday: 10:00 AM – 10:00 PM\nTuesday: 10:00 AM – 10:00 PM\nWednesday: 10:00 AM – 10:00 PM\nThursday: 10:00 AM – 10:00 PM\nFriday: 10:00 AM – 11:00 PM\nSaturday: 10:00 AM – 11:00 PM\nSunday: 10:00 AM – 10:00 PM",
+                "price_level": "Unknown",
+                "rating": 4.0,
+                "restaurant_website": "https://www.example-restaurant.com/"
             }
-        }
-    ]
+        ]
+      }
+    }
+  ]
 }
 ```
+-------------------------------------------------
 
-## get_conversations
-* Used for when the page first loads up, this is how you get a list of the user's conversation to display on the side bar (returns list in order of most recent session that's had a new chat)
-* Example input body:
+## API Endpoint: Get Conversations
 
-```
-{
-    "user_id": "1"
-}
-```
+### Description:
+This API endpoint retrieves a list of conversations (sessions) for a given user, including a preview of the conversation and the timestamp of the last update.
 
-* Return JSON Format:
+### Method:
+GET /api/get-conversations
 
-```
+### Input Format (Query Parameters):
+- `user_id` (string, required): The ID of the user for whom the conversations are being retrieved.
+
+#### Example Request URL:
+`GET /api/get-conversations?user_id=kaijones@goatlife.com`
+
+### Example JSON Response:
+```json
 {
     "sessions": [
         {
-            "session_id": "4",
-            "conversation_preview": "Hello! How can I assist you with finding a restaurant in Los Angeles today?",
-            "last_updated": "2024-09-14T09:09:11.438Z"
+        "session_id": "1",
+        "conversation_preview": "Last AI message content or fallback text",
+        "last_updated": "2024-09-29T12:34:56.000Z"
         },
         {
-            "session_id": "1",
-            "conversation_preview": "Hello! How can I assist you today? If you're looking for restaurant suggestions in Los Angeles, feel free to ask!",
-            "last_updated": "2024-09-14T08:54:54.499Z"
-        },
-        {
-            "session_id": "3",
-            "conversation_preview": "Here are some great Korean restaurants in Los Angeles that you might enjoy!",
-            "last_updated": "2024-09-14T08:54:25.567Z"
-        },
-        {
-            "session_id": "2",
-            "conversation_preview": "Hello John! How can I assist you today? Are you looking for restaurant recommendations in Los Angeles?",
-            "last_updated": "2024-09-14T08:51:29.784Z"
+        "session_id": "2",
+        "conversation_preview": "Another AI message content or fallback text",
+        "last_updated": "2024-09-28T10:23:45.000Z"
         }
     ]
 }
 ```
 
-## send_message
-* Used for when the user sends a chat to the chatbot, will return a response from the AI
-* Example input body:
+-
 
-```
+## API Endpoint: Get Restaurant Details (Photos)
+
+### Description:
+This API endpoint fetches the photos of a restaurant by its Place ID from Google Places API. It returns up to three photo URLs.
+
+### Method:
+GET /api/restaurant-details
+
+### Input Format (Query Parameters):
+- `placeId` (string, required): The Place ID for which restaurant details (photos) are being requested.
+
+#### Example Request URL:
+GET /api/restaurant-details?placeId=sdfoisdjfoisdjoij
+
+### Example JSON Response:
+  ```json
+  {
+    "photos": [
+      "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=PHOTO_REFERENCE_1&key=API_KEY",
+      "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=PHOTO_REFERENCE_2&key=API_KEY",
+      "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=PHOTO_REFERENCE_3&key=API_KEY"
+    ]
+  }
+
+
+
+## `POST /api/send-message`
+
+Handles POST requests to send a message from the user and get a response from the AI, along with restaurant data if applicable.
+
+### Input Format (Request Body)
+- `user_id` (string, required): The unique identifier of the user sending the message.
+- `session_id` (string, required): The session ID to associate the message with.
+- `message` (string, required): The content of the message the user is sending.
+
+#### Example Request Body:
+```json
 {
-    "user_id": "1",
-    "session_id": "4",
-    "message": "i want 2 sushi spots"
+  "user_id": "kaijones@goatlife.com",
+  "session_id": "1",
+  "message": "I'm the goat, infinite unlimited money"
 }
 ```
 
-* Return JSON Format:
 
-```
+#### Example Response JSON:
+```json
 {
-    "aiResponse": {
-        "general_response": "Here are two great sushi spots in Los Angeles:",
-        "restaurants": [
-            {
-                "name": "Tenno Sushi",
-                "address": "207 S Central Ave, Los Angeles, CA 90012, USA",
-                "rating": 4.4,
-                "price": "Moderate",
-                "summary": "Highly praised Japanese restaurant known for fresh sushi and generous portions. Favorites include sushi and sashimi lunch combos, spider rolls, and rainbow rolls. Friendly service and vibrant atmosphere, though parking is limited."
-            },
-            {
-                "name": "Sushi Takeda",
-                "address": "123 Astronaut Ellison S Onizuka St ste 307 3rd floor, Los Angeles, CA 90012, USA",
-                "rating": 4.6,
-                "price": "Expensive",
-                "summary": "Renowned for its exceptional Omakase experience with fresh and authentic sushi. Cozy atmosphere with attentive service. Some difficulty in finding the location; considered a hidden gem."
-            }
-        ]
-    }
+  "combinedResponse": {
+    "general_response": "Your AI response here",
+    "restaurants": [
+        {
+            "place_id": "ChIJxxxxxxxxxxxxxx",
+            "summary_of_restaurant": "Restaurant Name is a popular dining establishment known for its delicious and customizable dishes. It features an efficient ordering system, allowing patrons to personalize their dining experience.",
+            "summary_of_reviews": "Reviews highlight the impressive flavors and the overall taste balance, earning Restaurant Name a strong positive sentiment from customers.",
+            "address": "123 Example St, City, State 12345, USA",
+            "google_maps_url": "https://maps.google.com/?cid=xxxxxxxxxxxx",
+            "keywords": "dummy_keyword1, dummy_keyword2, restaurant, food, point_of_interest, establishment",
+            "name": "Restaurant Name",
+            "num_of_reviews": 100,
+            "opening_hours": "Monday: 10:00 AM – 10:00 PM\nTuesday: 10:00 AM – 10:00 PM\nWednesday: 10:00 AM – 10:00 PM\nThursday: 10:00 AM – 10:00 PM\nFriday: 10:00 AM – 11:00 PM\nSaturday: 10:00 AM – 11:00 PM\nSunday: 10:00 AM – 10:00 PM",
+            "price_level": "Unknown",
+            "rating": 4.0,
+            "restaurant_website": "https://www.example-restaurant.com/"
+        }
+    ]
+  }
 }
 ```
