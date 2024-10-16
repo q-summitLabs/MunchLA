@@ -7,6 +7,7 @@ import ChatArea from "./components/ChatArea";
 import InputArea from "./components/InputArea";
 import { useChatState } from "./hooks/useChatState";
 import { useTheme } from "./hooks/useTheme";
+import "./styles/chat.css";
 
 export default function MunchLAChatbot() {
   const { isDarkMode, toggleTheme } = useTheme();
@@ -30,19 +31,10 @@ export default function MunchLAChatbot() {
 
   return (
     <div
-      className={`flex h-screen bg-white text-gray-900 font-lexend ${
+      className={`flex h-screen bg-white text-gray-900 ${
         isDarkMode ? "dark" : ""
       }`}
     >
-      <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap");
-        :root {
-          --font-lexend: "Lexend", sans-serif;
-        }
-        body {
-          font-family: var(--font-lexend);
-        }
-      `}</style>
       <Sidebar
         isSidebarExpanded={isSidebarExpanded}
         toggleSidebar={toggleSidebar}
