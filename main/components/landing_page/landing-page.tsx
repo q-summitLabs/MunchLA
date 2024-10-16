@@ -118,19 +118,6 @@ export default function LandingPage() {
       animate="visible"
       variants={containerVariants}
     >
-      <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap");
-        :root {
-          --font-lexend: "Lexend", sans-serif;
-        }
-        body {
-          font-family: var(--font-lexend);
-          margin: 0;
-          padding: 0;
-          height: 100vh;
-          overflow: hidden;
-        }
-      `}</style>
       <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-lexend flex flex-col h-full">
         <motion.header
           className="flex justify-between items-center p-4 bg-white dark:bg-gray-900 z-10"
