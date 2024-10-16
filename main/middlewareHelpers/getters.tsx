@@ -2,7 +2,7 @@ import { BASE_URL } from "./constants";
 
 export async function fetchUserSessions(user_id: string): Promise<any> {
   try {
-    const apiUrl = `${BASE_URL}/get_conversations?user_id=${user_id}`;
+    const apiUrl = `${BASE_URL}/get-conversations?user_id=${user_id}`;
 
     const response = await fetch(apiUrl, {
       method: "GET",
@@ -27,7 +27,7 @@ export async function fetchNextAvailableChatSession(
   user_id: string
 ): Promise<any> {
   try {
-    const apiUrl = `${BASE_URL}/get_available_session?user_id=${user_id}`;
+    const apiUrl = `${BASE_URL}/get-available-session?user_id=${user_id}`;
 
     const response = await fetch(apiUrl, {
       method: "GET",
@@ -53,7 +53,7 @@ export async function fetchConversation(
   session_id: string
 ): Promise<any> {
   try {
-    const apiUrl = `${BASE_URL}/get_conversation?user_id=${user_id}&session_id=${session_id}`;
+    const apiUrl = `${BASE_URL}/get-conversation?user_id=${user_id}&session_id=${session_id}`;
 
     const response = await fetch(apiUrl, {
       method: "GET",
