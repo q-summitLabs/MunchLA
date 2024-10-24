@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"; 
 import dbConnect from "@/lib/db"; 
 import Conversation from "@/models/Conversation"; 
-import { RequestBody } from "@/datatypes/dataTypes";
+import { RequestBody } from "@/src/app/api/types";
 
 /**
  * Handles POST requests to delete a specific conversation session for a user.

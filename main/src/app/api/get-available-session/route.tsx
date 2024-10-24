@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
-import { UserDocument } from "@/datatypes/dataTypes";
+import { UserDocument } from "@/src/app/api/types";
 
 /**
  * Handles GET requests to fetch the next available session ID for a user.

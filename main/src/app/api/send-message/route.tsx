@@ -9,7 +9,7 @@ import { Pinecone } from "@pinecone-database/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
 import Conversation from "@/models/Conversation";
-import { RequestBody, AIMessageContent, Message } from "@/datatypes/dataTypes";
+import { RequestBody, AIMessageContent, Message } from "@/src/app/api/types";
 import { chain } from "@/utils/langchainUtils";
 import { upsertConversationMessage } from "@/utils/dbUtils";
 

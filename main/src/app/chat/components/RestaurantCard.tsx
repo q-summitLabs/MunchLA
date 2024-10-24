@@ -13,7 +13,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import Image from "next/image";
-import { Restaurant } from "@/datatypes/dataTypes";
+import { Restaurant } from "../types";
 
 // Price level mapping with tighter spacing
 const priceLevelMap = {
