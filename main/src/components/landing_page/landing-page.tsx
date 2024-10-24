@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -13,13 +13,17 @@ import {
   LogOut,
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/src/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/src/components/ui/dropdown-menu";
 
 export default function LandingPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
