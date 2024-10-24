@@ -1,3 +1,5 @@
+// types.ts for util files
+
 export type Restaurant = {
     name: string;
     place_id: string;
