@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@/src/components/ui/card";
 import { MapPinIcon, CameraIcon, ListIcon, IceCreamIcon } from "lucide-react";
 
 type SuggestionCardProps = {

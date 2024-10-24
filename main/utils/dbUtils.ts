@@ -1,6 +1,7 @@
 import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
-import { Message } from "@/datatypes/dataTypes";
+// import { Message } from "@/datatypes/dataTypes";
+import { Message } from "./types";
 
 /**
  * Upserts a message into the conversation for the given user and session.

@@ -8,7 +8,7 @@ export async function sendMessage(user_id: string, session_id: string, message: 
     };
 
     try {
-        const apiUrl = `${BASE_URL}/send_message`;
+        const apiUrl = `${BASE_URL}/send-message`;
         
         const response = await fetch(apiUrl, {
             method: "POST",
@@ -40,7 +40,7 @@ export async function deleteConversation(user_id: string, session_id: string): P
     };
 
     try {
-        const apiUrl = `${BASE_URL}/delete_conversation`;
+        const apiUrl = `${BASE_URL}/delete-conversation`;
         
         const response = await fetch(apiUrl, {
             method: "POST",
