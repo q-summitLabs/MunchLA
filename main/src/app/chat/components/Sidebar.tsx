@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/src/components/ui/button";
+import { ScrollArea } from "@/src/components/ui/scroll-area";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/src/components/ui/dropdown-menu";
 import {
   ChevronRightIcon,
   MenuIcon,
@@ -26,7 +26,7 @@ type SidebarProps = {
   handleSessionClick: (sessionId: string) => void;
   handleRemoveSession: (sessionId: string) => void;
   toggleTheme: () => void;
-  setSelectedSessionId: (sessionId: string | null) => void; 
+  setSelectedSessionId: (sessionId: string | null) => void;
   isDarkMode: boolean;
   selectedSessionId: string | null;
 };
@@ -43,7 +43,6 @@ export default function Sidebar({
   isDarkMode,
   selectedSessionId,
 }: SidebarProps) {
-
   const handleSessionSelect = (sessionId: string) => {
     setSelectedSessionId(sessionId);
     handleSessionClick(sessionId);
