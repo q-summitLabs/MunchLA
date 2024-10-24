@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Conversation from "@/models/Conversation";
-import { Message, UserDocument } from "@/datatypes/dataTypes";
+import { Message, UserDocument } from "@/src/app/api/types";
 
 /**
  * Handles GET requests to fetch conversation messages for a specific user and session.
