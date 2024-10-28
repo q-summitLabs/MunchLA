@@ -47,6 +47,7 @@ export default function Header({ loginInfo }: HeaderProps) {
               <AvatarImage
                 src={loginInfo?.user?.image ?? ""}
                 alt={loginInfo?.user?.name ?? "User"}
+                crossOrigin="anonymous"
               />
               <AvatarFallback>
                 {loginInfo?.user?.name?.[0] ?? "U"}

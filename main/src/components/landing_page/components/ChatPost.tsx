@@ -15,7 +15,7 @@ interface ChatPostProps {
 export default function ChatPost({ chatPosts, currentIndex }: ChatPostProps) {
   return (
     <motion.div
-      className="w-full md:w-1/2 max-w-md h-[40vh] md:h-[50vh]"
+      className="w-full lg:w-1/2 max-w-2xl h-[40vh] sm:h-[50vh] lg:h-[60vh]"
       variants={{
         hidden: { y: 20, opacity: 0 },
         visible: { y: 0, opacity: 1 },
@@ -42,10 +42,10 @@ export default function ChatPost({ chatPosts, currentIndex }: ChatPostProps) {
               priority={currentIndex === 0}
             />
             <div className="absolute inset-x-4 bottom-4 bg-white dark:bg-gray-800 p-2 rounded-xl shadow-md max-w-[80%] max-h-[30%] overflow-y-auto">
-              <p className="text-xs md:text-sm font-semibold mb-1 text-purple-600 dark:text-purple-400">
+              <p className="text-xs sm:text-sm font-semibold mb-1 text-purple-600 dark:text-purple-400">
                 {chatPosts[currentIndex].prompt}
               </p>
-              <p className="text-xs line-clamp-2 md:line-clamp-3">
+              <p className="text-xs sm:text-sm line-clamp-2 sm:line-clamp-3">
                 {chatPosts[currentIndex].response}
               </p>
             </div>

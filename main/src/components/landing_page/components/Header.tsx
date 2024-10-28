@@ -42,13 +42,13 @@ export default function Header({
       }}
     >
       <motion.div
-        className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-yellow-400 dark:from-purple-400 dark:to-yellow-300"
+        className="text-xl sm:text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-yellow-400 dark:from-purple-400 dark:to-yellow-300"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
         MunchLA
       </motion.div>
-      <nav className="flex items-center space-x-4">
+      <nav className="flex items-center space-x-2 sm:space-x-4">
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Button
             variant="ghost"
@@ -57,15 +57,15 @@ export default function Header({
             className="text-gray-600 dark:text-gray-400"
           >
             {isDarkMode ? (
-              <SunIcon className="h-5 w-5" />
+              <SunIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             ) : (
-              <MoonIcon className="h-5 w-5" />
+              <MoonIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             )}
           </Button>
         </motion.div>
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Button variant="ghost" size="icon">
-            <MoreVerticalIcon className="h-5 w-5" />
+            <MoreVerticalIcon className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         </motion.div>
         {status === "authenticated" ? (
@@ -76,10 +76,11 @@ export default function Header({
                 whileTap={{ scale: 0.95 }}
                 className="focus:outline-none focus:ring-0"
               >
-                <Avatar className="cursor-pointer ring-2 ring-gray-400">
+                <Avatar className="cursor-pointer ring-2 ring-gray-400 h-8 w-8 sm:h-10 sm:w-10">
                   <AvatarImage
                     src={session?.user?.image ?? ""}
                     alt={session?.user?.name ?? "User"}
+                    crossOrigin="anonymous"
                   />
                   <AvatarFallback>
                     {session?.user?.name?.[0] ?? "U"}
@@ -99,7 +100,7 @@ export default function Header({
         ) : (
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link href="/login">
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full">
+              <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-2">
                 Sign in
               </Button>
             </Link>

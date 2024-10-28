@@ -11,8 +11,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
-        port: "",
-        pathname: "/**", // This should allow all paths under lh3.googleusercontent.com
+        pathname: "/a/**",
       },
     ],
   },

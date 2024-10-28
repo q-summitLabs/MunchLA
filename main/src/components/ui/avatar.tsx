@@ -27,7 +27,7 @@ const AvatarImage = React.forwardRef<
   <AvatarPrimitive.Image
     ref={ref}
     className={cn("aspect-square h-full w-full", className)}
-    crossOrigin="anonymous" // Add the crossorigin attribute here
+    crossOrigin="anonymous"
     {...props}
   />
 ));
