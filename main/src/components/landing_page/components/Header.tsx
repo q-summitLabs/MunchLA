@@ -80,7 +80,6 @@ export default function Header({
                   <AvatarImage
                     src={session?.user?.image ?? ""}
                     alt={session?.user?.name ?? "User"}
-                    crossOrigin="anonymous"
                   />
                   <AvatarFallback>
                     {session?.user?.name?.[0] ?? "U"}
