@@ -1,4 +1,3 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -8,6 +7,12 @@ const nextConfig = {
         hostname: "maps.googleapis.com",
         port: "",
         pathname: "/maps/api/place/photo/**",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+        pathname: "/**", // This should allow all paths under lh3.googleusercontent.com
       },
     ],
   },
