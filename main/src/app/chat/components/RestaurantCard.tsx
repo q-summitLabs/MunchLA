@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent } from "@/src/components/ui/card";
+import { Button } from "@/src/components/ui/button";
+import { Badge } from "@/src/components/ui/badge";
+import { Separator } from "@/src/components/ui/separator";
 import {
   Star,
   MapPin,
@@ -13,7 +13,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import Image from "next/image";
-import { Restaurant } from "@/datatypes/dataTypes";
+import { Restaurant } from "../types";
 
 // Price level mapping with tighter spacing
 const priceLevelMap = {
