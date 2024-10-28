@@ -84,12 +84,12 @@ export default function LandingPage() {
 
   return (
     <motion.div
-      className={`h-screen flex flex-col ${isDarkMode ? "dark" : ""}`}
+      className={`min-h-screen flex flex-col ${isDarkMode ? "dark" : ""}`}
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
-      <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white  font-lexend flex flex-col h-full">
+      <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-lexend flex flex-col min-h-screen">
         <Header
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
@@ -97,8 +97,8 @@ export default function LandingPage() {
           status={status}
         />
 
-        <main className="flex-grow flex flex-col md:flex-row items-center justify-center px-4 overflow-hidden">
-          <div className="w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8">
+        <main className="flex-grow flex flex-col items-center justify-center px-4 py-8 overflow-hidden">
+          <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-8">
             <MainContent status={status} />
             <ChatPost chatPosts={chatPosts} currentIndex={currentIndex} />
           </div>

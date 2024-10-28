@@ -9,6 +9,11 @@ const nextConfig = {
         port: "",
         pathname: "/maps/api/place/photo/**",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/a/**",
+      },
     ],
   },
 };

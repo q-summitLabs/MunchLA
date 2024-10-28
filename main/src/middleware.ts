@@ -31,7 +31,7 @@ export default async function middleware(request: NextRequest) {
     const { success } = await ratelimit.limit(ip);
 
     if (!success) {
-        return new NextResponse('Too Many Requests', { status: 429 });
+        return new NextResponse('Too Many Requests', { status: 429, headers: response.headers });
     }
 
     // Authentication check
