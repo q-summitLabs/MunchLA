@@ -15,7 +15,6 @@ import {
 import Image from "next/image";
 import { Restaurant } from "../types";
 
-// Price level mapping with tighter spacing
 const priceLevelMap = {
   PRICE_LEVEL_FREE: {
     label: "Free",
@@ -57,7 +56,6 @@ const priceLevelMap = {
   },
 };
 
-// Create a cache object outside the component to persist across renders
 const imageCache: { [key: string]: string[] } = {};
 
 export default function EnhancedRestaurantCard({
@@ -106,7 +104,7 @@ export default function EnhancedRestaurantCard({
   return (
     <Card className="overflow-hidden bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardContent className="p-0">
-        <div className="relative h-48 w-full">
+        <div className="relative h-48 sm:h-64 w-full">
           {isLoading ? (
             <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-700">
               <p className="text-gray-500 dark:text-gray-400">Loading...</p>
@@ -116,6 +114,7 @@ export default function EnhancedRestaurantCard({
               src={images[0]}
               alt={`${restaurant.name} image`}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               style={{ objectFit: "cover" }}
             />
           ) : (
@@ -124,12 +123,12 @@ export default function EnhancedRestaurantCard({
             </div>
           )}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-            <h3 className="text-2xl font-bold text-white mb-2">
+            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
               {restaurant.name}
             </h3>
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Badge className="bg-yellow-400 text-yellow-900">
-                <Star className="w-4 h-4 mr-1" />
+                <Star className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                 {restaurant.rating}
               </Badge>
               <Badge className="bg-green-500 text-white flex items-center">
@@ -141,19 +140,19 @@ export default function EnhancedRestaurantCard({
         </div>
 
         <div className="p-4 space-y-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-          <p className="text-sm flex items-start">
-            <MapPin className="w-4 h-4 mr-2 flex-shrink-0 mt-1" />
+          <p className="text-xs sm:text-sm flex items-start">
+            <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-2 flex-shrink-0 mt-1" />
             {restaurant.address}
           </p>
 
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex flex-wrap items-center justify-between text-xs sm:text-sm gap-2">
             <a
               href={restaurant.google_maps_url}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200"
             >
-              <MapPin className="w-4 h-4 mr-1" />
+              <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
               View on Maps
             </a>
             {restaurant.restaurant_website && (
@@ -163,7 +162,7 @@ export default function EnhancedRestaurantCard({
                 rel="noopener noreferrer"
                 className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200"
               >
-                <Globe className="w-4 h-4 mr-1" />
+                <Globe className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                 Website
               </a>
             )}
@@ -171,7 +170,7 @@ export default function EnhancedRestaurantCard({
 
           <Separator className="my-3 bg-gray-200 dark:bg-gray-700" />
 
-          <div className="text-sm">
+          <div className="text-xs sm:text-sm">
             <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
               Restaurant Summary
             </h4>
@@ -183,7 +182,7 @@ export default function EnhancedRestaurantCard({
           {isExpanded && (
             <>
               <Separator className="my-3 bg-gray-200 dark:bg-gray-700" />
-              <div className="space-y-3 text-sm">
+              <div className="space-y-3 text-xs sm:text-sm">
                 <div>
                   <h4 className="font-semibold text-gray-800 dark:text-gray-200">
                     Opening Hours
@@ -214,12 +213,12 @@ export default function EnhancedRestaurantCard({
           >
             {isExpanded ? (
               <>
-                <ChevronUp className="w-4 h-4 mr-2" />
+                <ChevronUp className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                 Show Less
               </>
             ) : (
               <>
-                <ChevronDown className="w-4 h-4 mr-2" />
+                <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                 Show More
               </>
             )}

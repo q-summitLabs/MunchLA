@@ -12,16 +12,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import { GridIcon, UtensilsIcon, LogOut } from "lucide-react";
+import { GridIcon, UtensilsIcon, LogOut, MenuIcon } from "lucide-react";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import { motion } from "framer-motion";
 
 type HeaderProps = {
   loginInfo: Session | null;
+  toggleSidebar: () => void;
 };
 
-export default function Header({ loginInfo }: HeaderProps) {
+export default function Header({ loginInfo, toggleSidebar }: HeaderProps) {
   const handleSignOut = () => {
     signOut({ callbackUrl: "/login" });
   };
@@ -29,6 +30,14 @@ export default function Header({ loginInfo }: HeaderProps) {
   return (
     <header className="p-4 flex items-center justify-between">
       <div className="flex items-center space-x-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="sm:hidden"
+          onClick={toggleSidebar}
+        >
+          <MenuIcon className="h-6 w-6" />
+        </Button>
         <Button variant="ghost" size="icon">
           <GridIcon className="h-6 w-6" />
         </Button>
@@ -41,7 +50,7 @@ export default function Header({ loginInfo }: HeaderProps) {
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="focus:outline-none focus:ring-0" // Added here
+            className="focus:outline-none focus:ring-0"
           >
             <Avatar className="cursor-pointer ring-2 ring-gray-400 ">
               <AvatarImage

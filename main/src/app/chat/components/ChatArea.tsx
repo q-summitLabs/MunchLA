@@ -7,7 +7,7 @@ import RestaurantCard from "./RestaurantCard";
 import SuggestionCard from "./SuggestionCard";
 import "../styles/custom-scrollbar.css";
 import "../styles/frying-pan-animation.css";
-// no animation
+
 type ChatAreaProps = {
   isFirstInput: boolean;
   currentConversation: Conversation | null;
@@ -153,15 +153,15 @@ export default function ChatArea({
       <div className="space-y-6 min-h-full flex flex-col justify-center">
         {isFirstInput ? (
           <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-left">
+            <h1 className="text-2xl md:text-3xl font-bold text-left">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-yellow-400 dark:from-purple-400 dark:to-yellow-300">
                 Hello, {loginInfo?.user?.name ? loginInfo.user.name : "there"}!
               </span>
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 text-left">
+            <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 text-left">
               How can I help you discover LA&apos;s culinary delights today?
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {suggestions.map((suggestion, index) => (
                 <SuggestionCard
                   key={index}
@@ -173,9 +173,9 @@ export default function ChatArea({
           </div>
         ) : (
           <div className="space-y-4">
-              {currentConversation?.messages?.map((message, index) => (
-                <MessageItem key={index} message={message} />
-              ))}
+            {currentConversation?.messages?.map((message, index) => (
+              <MessageItem key={index} message={message} />
+            ))}
             {isLoading && (
               <div className="flex justify-start">
                 <FryingPanAnimation />
@@ -200,7 +200,7 @@ function MessageItem({ message }: { message: Message }) {
         className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}
       >
         <div
-          className={`inline-block p-2 rounded-lg max-w-[70%] text-sm ${
+          className={`inline-block p-2 rounded-lg max-w-full sm:max-w-[70%] text-sm ${
             message.isBot
               ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
               : "bg-purple-500 text-white"
