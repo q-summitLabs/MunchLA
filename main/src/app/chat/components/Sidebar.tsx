@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { ScrollArea } from "@/src/components/ui/scroll-area";
 import {
@@ -43,6 +44,25 @@ export default function Sidebar({
   isDarkMode,
   selectedSessionId,
 }: SidebarProps) {
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (isSidebarExpanded) {
+      setIsVisible(true);
+      setIsAnimating(true);
+      const timer = setTimeout(() => setIsAnimating(false), 300);
+      return () => clearTimeout(timer);
+    } else {
+      setIsAnimating(true);
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+        setIsAnimating(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isSidebarExpanded]);
+
   const handleSessionSelect = (sessionId: string) => {
     setSelectedSessionId(sessionId);
     handleSessionClick(sessionId);
@@ -50,9 +70,23 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out ${
-        isSidebarExpanded ? "w-80" : "w-16"
-      }`}
+      className={`fixed top-0 left-0 h-full bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out z-50
+        ${
+          isVisible || isSidebarExpanded
+            ? isSidebarExpanded
+              ? "w-64 md:w-80"
+              : "w-0 md:w-16"
+            : "w-0 md:w-16"
+        }
+        ${
+          isAnimating
+            ? isSidebarExpanded
+              ? "animate-slide-right"
+              : "animate-slide-left"
+            : ""
+        }
+        ${isVisible || isSidebarExpanded ? "sm:flex" : "hidden sm:flex"}
+      `}
     >
       <div className="p-4 flex items-center justify-between">
         <Button
