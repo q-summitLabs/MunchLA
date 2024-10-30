@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { ScrollArea } from "@/src/components/ui/scroll-area";
 import {
@@ -16,7 +15,6 @@ import {
   ChevronDownIcon,
   SunIcon,
   MoonIcon,
-  XIcon,
 } from "lucide-react";
 import { Session } from "../types";
 
@@ -45,21 +43,6 @@ export default function Sidebar({
   isDarkMode,
   selectedSessionId,
 }: SidebarProps) {
-  const [isVisible, setIsVisible] = useState(isSidebarExpanded);
-
-  useEffect(() => {
-    if (isSidebarExpanded) {
-      setIsVisible(true);
-      // Prevent body scroll when sidebar is open on mobile
-      if (window.innerWidth < 640) {
-        document.body.style.overflow = 'hidden';
-      }
-    } else {
-      const timer = setTimeout(() => setIsVisible(false), 300);
-      document.body.style.overflow = '';
-      return () => clearTimeout(timer);
-    }
-  }, [isSidebarExpanded]);
 
   const handleSessionSelect = (sessionId: string) => {
     setSelectedSessionId(sessionId);
