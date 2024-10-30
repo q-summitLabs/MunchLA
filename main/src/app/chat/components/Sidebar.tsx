@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { ScrollArea } from "@/src/components/ui/scroll-area";
 import {
@@ -44,24 +43,6 @@ export default function Sidebar({
   isDarkMode,
   selectedSessionId,
 }: SidebarProps) {
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    if (isSidebarExpanded) {
-      setIsVisible(true);
-      setIsAnimating(true);
-      const timer = setTimeout(() => setIsAnimating(false), 300);
-      return () => clearTimeout(timer);
-    } else {
-      setIsAnimating(true);
-      const timer = setTimeout(() => {
-        setIsVisible(false);
-        setIsAnimating(false);
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [isSidebarExpanded]);
 
   const handleSessionSelect = (sessionId: string) => {
     setSelectedSessionId(sessionId);
@@ -69,47 +50,56 @@ export default function Sidebar({
   };
 
   return (
-    <aside
-      className={`fixed top-0 left-0 h-full bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out z-50
-        ${
-          isVisible || isSidebarExpanded
-            ? isSidebarExpanded
-              ? "w-64 md:w-80"
-              : "w-0 md:w-16"
-            : "w-0 md:w-16"
-        }
-        ${
-          isAnimating
-            ? isSidebarExpanded
-              ? "animate-slide-right"
-              : "animate-slide-left"
-            : ""
-        }
-        ${isVisible || isSidebarExpanded ? "sm:flex" : "hidden sm:flex"}
-      `}
-    >
-      <div className="p-4 flex items-center justify-between">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleSidebar}
-          className="text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 rounded-full"
-        >
-          {isSidebarExpanded ? (
-            <ChevronRightIcon className="h-6 w-6" />
-          ) : (
-            <MenuIcon className="h-6 w-6" />
-          )}
-        </Button>
-        {isSidebarExpanded && (
-          <span className="font-semibold text-gray-900 dark:text-white">
-            MunchLA
-          </span>
-        )}
-      </div>
+    <>
+      {/* Mobile overlay with blur effect */}
       {isSidebarExpanded && (
-        <>
-          <div className="p-4">
+        <div 
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 sm:hidden transition-opacity duration-300" 
+          onClick={toggleSidebar}
+        />
+      )}
+
+      {/* Background div - only visible on desktop */}
+      <div
+        className={`fixed top-0 left-0 h-full bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out z-40 hidden sm:block
+          ${isSidebarExpanded ? "w-64 md:w-80" : "w-16"}
+        `}
+      />
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed h-full border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out z-50
+          sm:left-0 
+          ${isSidebarExpanded 
+            ? "w-[65%] sm:w-64 md:w-80 translate-x-0" 
+            : "w-16 -translate-x-full sm:translate-x-0"
+          }
+          top-0 left-0 sm:top-0
+          bg-gray-100 dark:bg-gray-800
+        `}
+      >
+        <div className="p-4 flex items-center justify-between bg-gray-100 dark:bg-gray-800">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSidebar}
+            className="text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 rounded-full flex"
+          >
+            {isSidebarExpanded ? (
+              <ChevronRightIcon className="h-6 w-6" />
+            ) : (
+              <MenuIcon className="h-6 w-6" />
+            )}
+          </Button>
+          {isSidebarExpanded && (
+            <span className="font-semibold text-gray-900 dark:text-white">
+              MunchLA
+            </span>
+          )}
+        </div>
+
+        <div className={`flex flex-col flex-grow overflow-hidden transition-all duration-300 ${isSidebarExpanded ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="p-4 bg-gray-100 dark:bg-gray-800">
             <Button
               variant="outline"
               className="w-full justify-start text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 rounded-full"
@@ -119,7 +109,8 @@ export default function Sidebar({
               New chat
             </Button>
           </div>
-          <ScrollArea className="flex-grow px-4">
+
+          <ScrollArea className="flex-grow px-4 bg-gray-100 dark:bg-gray-800">
             <div className="space-y-2">
               {userSessions.map((session) => (
                 <div
@@ -162,7 +153,8 @@ export default function Sidebar({
               ))}
             </div>
           </ScrollArea>
-          <div className="p-4 mt-auto">
+
+          <div className="p-4 mt-auto bg-gray-100 dark:bg-gray-800">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -192,8 +184,8 @@ export default function Sidebar({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </>
-      )}
-    </aside>
+        </div>
+      </aside>
+    </>
   );
 }
