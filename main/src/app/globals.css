@@ -1,15 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap");
 
 body {
   font-family: var(--font-lexend);
   margin: 0;
   padding: 0;
   height: 100vh;
-  overflow: hidden;
   color: var(--foreground);
   background: var(--background);
 }
